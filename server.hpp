@@ -2,6 +2,7 @@
 #define SERVER_HPP
 
 #include <vector>
+#include <map>
 #include <sys/event.h>
 
 #include "Channel.hpp"
@@ -20,8 +21,9 @@ public:
 private:
 	//
 	std::vector<Channel*> channels;
-	std::vector<Client*> clients;
-	
+	std::map<int, Client*> clients; // fd -> client
+	std::map<std::string, Client*> clients; // nickname -> client
+
 	std::string server_password;
 	int server_port;
 	//
