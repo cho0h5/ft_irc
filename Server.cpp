@@ -53,6 +53,7 @@ int Server::run() {
 						close(event.ident);
 						continue;
 					}
+					clients_fd[event.ident].read_handler(buf, n);
 					buf[n] = '\n';
 					printf("%s\n", buf);
 					write(event.ident, buf, n);
