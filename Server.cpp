@@ -41,6 +41,9 @@ int Server::run() {
 					exit(EXIT_FAILURE);
 				} else if (event.ident == server_socket_fd) {
 					const int client_socket_fd = accept(server_socket_fd, (struct sockaddr*)NULL, NULL);
+					const Client client(client_socket_fd);
+
+					clients_fd[client_socket_fd] = client;
 					add_event(client_socket_fd, EVFILT_READ);
 					// add_event(client_socket_fd, EVFILT_WRITE);
 				} else if (event.filter == EVFILT_READ) {
