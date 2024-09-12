@@ -70,6 +70,7 @@ void Server::command_nick(const int fd, std::vector<std::string> cmds) {
         return;
     }
     // change nickname
+    clients_fd[fd].set_nickname(cmds[1]);
 }
 
 int Server::command_user(const int fd, std::vector<std::string> cmds) {
