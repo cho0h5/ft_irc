@@ -94,12 +94,23 @@ int Server::open_server() {
 	return 0;
 }
 
-void Server::command_nick(const int fd, const std::string old_nickname, const std::string new_nickname) {
+void Server::command_nick(const int fd, const std::string nickname) {
     Client *client = &clients_fd[fd];
 
-    std::map<std::string, Client*>::iterator it = clients_nickname.find(old_nickname);
-    if (it != clients_nickname.end()) {
-        clients_nickname.erase(it);
+    if (!client->get_nickname().empty()) {
+        clients_nickname.erase(client->get_nickname());
     }
-    clients_nickname[new_nickname] = client;
+    clients_nickname[nickname] = client;
+
+    client->set_nickname(nickname);
+}
+
+int Server::command_user(const int fd, const std::string username, const std::string realname) {
+    Client *client = &clients_fd[fd];
+
+    if (client->get_username().empty()) return -1;  // 이미 등록되어있으면
+    // :molybdenum.libera.chat 462 younghoc :You are already connected and cannot handshake again
+
+    client->set_nickname(username);
+    client->set_realname(realname);
 }

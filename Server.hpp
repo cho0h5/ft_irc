@@ -36,8 +36,8 @@ private:
 	int open_server();
 	void add_event(uintptr_t ident, int16_t filter);
 
-	void command_nick(const int fd, const std::string old_nickname, const std::string new_nickname);
-	void command_user();
+	void command_nick(const int fd, const std::string nickname);
+	int command_user(const int fd, const std::string username, const std::string realname);
 	void command_privmsg();
 };
 
