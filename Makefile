@@ -16,12 +16,15 @@ $(NAME): $(OBJS)
 clean:
 	rm -f $(OBJS)
 
-fclean: 
+fclean:
 	make clean
 	rm -f $(NAME)
 
 re:
 	make fclean
 	make all
+
+test: all
+	$(NAME) 8080 password
 
 .PHONY: all clean fclean re
