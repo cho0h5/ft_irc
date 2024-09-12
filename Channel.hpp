@@ -30,14 +30,13 @@ class Channel {
 
         std::string channel_name;
         std::string channel_topic;
-        std::string channel_key; // password
 
         bool is_invite_only;
         bool is_topic_restrict;
         std::string channel_key;
         unsigned int channel_users_limit;
 
-        
+
 };
 
 #endif
