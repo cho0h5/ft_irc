@@ -35,6 +35,10 @@ private:
 	int create_kqueue();
 	int open_server();
 	void add_event(uintptr_t ident, int16_t filter);
+
+	void command_nick(const int fd, const std::string nickname);
+	void command_user();
+	void command_privmsg();
 };
 
 #endif
