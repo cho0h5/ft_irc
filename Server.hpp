@@ -20,7 +20,7 @@ public:
 
 private:
 	//
-	std::vector<Channel*> channels;
+	std::map<std::string, Channel> channels;
 	std::map<int, Client*> clients; // fd -> client
 	std::map<std::string, Client*> clients; // nickname -> client
 
