@@ -48,25 +48,25 @@ void Server::command_nick(const int fd, std::vector<std::string> cmds) {
     
     // no new_nickname : ERR_NONICKNAMEGIVEN, 431
     if (cmds.size() != 2) {
-        send_error(fd, 431);
+        // send_error(fd, 431);
         return;
     }
 
     // already registered nickname : ERR_NICKNAMEINUSE, 433
     if (clients_nickname.find(cmds[1]) != clients_nickname.end()) {
-        send_error(fd, 433);
+        // send_error(fd, 433);
         return;
     }
     
     // check valid nickname
     for (char c : cmds[1].size()) {
         if (!(('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z') || ('0' <= c && c <= '9'))) {
-            send_error(fd, 432);
+            // send_error(fd, 432);
             return;
         }
     }
     if (('0' <= cmds[1][0] && cmds[1][0] <= '9')) {
-        send_error(fd, 432);
+        // send_error(fd, 432);
         return;
     }
     // change nickname
