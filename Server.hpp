@@ -36,9 +36,10 @@ private:
 	int open_server();
 	void add_event(uintptr_t ident, int16_t filter);
 
-	void command_nick(const int fd, const std::string nickname);
-	int command_user(const int fd, const std::string username, const std::string realname);
-	void command_privmsg();
+	void command_nick(const int fd, const std::string &nickname);
+	int command_user(const int fd, const std::string &username, const std::string &realname);
+	void command_privmsg_user(const std::string &nickname, const std::string &content);
+	void command_privmsg_channel(const std::string &channelname, const std::string &content);
 };
 
 #endif

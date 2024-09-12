@@ -94,7 +94,7 @@ int Server::open_server() {
 	return 0;
 }
 
-void Server::command_nick(const int fd, const std::string nickname) {
+void Server::command_nick(const int fd, const std::string &nickname) {
     Client *client = &clients_fd[fd];
 
     if (!client->get_nickname().empty()) {
@@ -105,7 +105,7 @@ void Server::command_nick(const int fd, const std::string nickname) {
     client->set_nickname(nickname);
 }
 
-int Server::command_user(const int fd, const std::string username, const std::string realname) {
+int Server::command_user(const int fd, const std::string &username, const std::string &realname) {
     Client *client = &clients_fd[fd];
 
     if (client->get_username().empty()) return -1;  // 이미 등록되어있으면
@@ -113,4 +113,6 @@ int Server::command_user(const int fd, const std::string username, const std::st
 
     client->set_nickname(username);
     client->set_realname(realname);
+
+    return 0;
 }
