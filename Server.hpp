@@ -9,7 +9,6 @@
 #include "Client.hpp"
 
 #define EVENTLIST_SIZE 8
-#define PORT 8080
 
 class Server {
 public:
