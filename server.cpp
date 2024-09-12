@@ -4,9 +4,15 @@
 #include <unistd.h>
 #include <iostream>
 
-#include "server.hpp"
+#include "Server.hpp"
 
-Server::Server() {
+Server::Server(char* port, std::string password) : server_password(password) {
+	if (std::strlen(port) > 6 || std::atoi(port) < 1024) {
+		std::cout << "error\n";
+		return;
+	}
+	server_port = std::atoi(port);
+
 	create_kqueue();
 	if (open_server()) {
 		std::cout << "error\n";
@@ -77,7 +83,7 @@ int Server::open_server() {
 	memset(&addr, 0, sizeof(addr));
 
 	addr.sin_family = AF_INET;
-	addr.sin_port = htons(PORT);
+	addr.sin_port = htons(server_port);
 	addr.sin_addr.s_addr = INADDR_ANY;
 
 	bind(server_socket_fd, (struct sockaddr*)&addr, sizeof(addr));
