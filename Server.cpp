@@ -93,3 +93,13 @@ int Server::open_server() {
 
 	return 0;
 }
+
+void Server::command_nick(const int fd, const std::string old_nickname, const std::string new_nickname) {
+    Client *client = &clients_fd[fd];
+
+    std::map<std::string, Client*>::iterator it = clients_nickname.find(old_nickname);
+    if (it != clients_nickname.end()) {
+        clients_nickname.erase(it);
+    }
+    clients_nickname[new_nickname] = client;
+}
