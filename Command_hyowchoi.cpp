@@ -50,7 +50,7 @@ void Server::command_nick(const int fd, std::vector<std::string> cmds) {
     if (cmds.size() != 2) {
         send_error(fd, 431);
         return;
-    }`
+    }
 
     // already registered nickname : ERR_NICKNAMEINUSE, 433
     if (clients_nickname.find(cmds[1]) != clients_nickname.end()) {
@@ -70,7 +70,8 @@ void Server::command_nick(const int fd, std::vector<std::string> cmds) {
         return;
     }
     // change nickname
-    clients_fd[fd].set_nickname(cmds[1]);
+    std::map<int, Client*>::iterator it = clients_fd.find(fd);
+    it->second->set_nickname(cmds[1]);
 }
 
 int Server::command_user(const int fd, std::vector<std::string> cmds) {
