@@ -54,9 +54,6 @@ int Server::run() {
 						continue;
 					}
 					clients_fd[event.ident].read_handler(buf, n);
-					buf[n] = '\n';
-					printf("%s\n", buf);
-					write(event.ident, buf, n);
 				}
 				// TODO: EVFILT_WRITE
 			}
