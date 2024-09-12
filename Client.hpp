@@ -15,7 +15,7 @@ class Client {
         std::string get_hostname() const;
         void set_nickname(const std::string &nickname);
         void set_username(const std::string &username);
-        void set_realname(const std::string &username);
+        void set_realname(const std::string &realname);
         void set_hostname(const std::string &hostname);
 
         void read_handler(const char *buf, const ssize_t n);
