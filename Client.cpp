@@ -3,7 +3,7 @@
 Client::Client() {
 }
 
-Client::Client(const int fd) : fd(fd) {
+Client::Client(const int fd, const std::string &ip) : fd(fd), hostname(ip) {
 }
 
 int Client::get_fd() const {

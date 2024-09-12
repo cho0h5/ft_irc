@@ -1,11 +1,13 @@
 #include <sys/event.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #include <unistd.h>
 #include <iostream>
 #include <sstream>
 
 #include "Server.hpp"
+#include "Client.hpp"
 
 Server::Server(char* port, std::string password) : server_password(password) {
 	if (std::strlen(port) > 6 || std::atoi(port) < 1024) {
@@ -41,11 +43,15 @@ int Server::run() {
 					perror("kqueue");
 					exit(EXIT_FAILURE);
 				} else if (event.ident == server_socket_fd) {
-					const int client_socket_fd = accept(server_socket_fd, (struct sockaddr*)NULL, NULL);
-					const Client client(client_socket_fd);
-
-					clients_fd[client_socket_fd] = client;
-					add_event(client_socket_fd, EVFILT_READ);
+    				struct sockaddr_in client_addr;
+                    socklen_t client_addr_len = sizeof(client_addr);
+					const int client_fd = accept(server_socket_fd, (struct sockaddr *)&client_addr, &client_addr_len);
+					char client_ip[INET_ADDRSTRLEN];
+					inet_ntop(AF_INET, &client_addr.sin_addr, client_ip, INET_ADDRSTRLEN);
+					std::string client_ip_str(client_ip);
+					const Client client(client_fd, client_ip_str);
+					clients_fd[client_fd] = client;
+					add_event(client_fd, EVFILT_READ);
 					// add_event(client_socket_fd, EVFILT_WRITE);
 				} else if (event.filter == EVFILT_READ) {
 					char buf[1024];
