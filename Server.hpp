@@ -15,7 +15,6 @@ public:
 	Server(char* port, std::string password);
 
 	int run();	// return value: error code
-	void add_event(uintptr_t ident, int16_t filter);
 
 private:
 	//
@@ -35,6 +34,7 @@ private:
 
 	int create_kqueue();
 	int open_server();
+	void add_event(uintptr_t ident, int16_t filter);
 };
 
 #endif
