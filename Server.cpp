@@ -3,6 +3,7 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <iostream>
+#include <sstream>
 
 #include "Server.hpp"
 
@@ -94,25 +95,63 @@ int Server::open_server() {
 	return 0;
 }
 
-void Server::command_nick(const int fd, const std::string &nickname) {
-    Client *client = &clients_fd[fd];
 
-    if (!client->get_nickname().empty()) {
-        clients_nickname.erase(client->get_nickname());
+void Server::command_parsing(const int fd, std::string command) {
+    const std::string Commands[] = {
+        "NICK", "USER", "PRIVMSG", "JOIN", "MODE", "TOPIC", "KICK", "INVITE" };
+    std::stringstream ss(command);
+    std::string exec_cmd, token;
+    std::vector<std::string> tokens;
+
+    // find execute commands
+    for (const std::string &cmd : Commands) {
+        if (command.find(cmd) == 0) {
+            exec_cmd = cmd;
+            break;
+        }
     }
-    clients_nickname[nickname] = client;
 
-    client->set_nickname(nickname);
+    // tokenize
+    while (ss >> token) {
+        tokens.push_back(token);
+    }
+
+    if (exec_cmd == "NICK") {
+        command_nick(fd, tokens[1]);
+    } else if (exec_cmd == "USER") {
+        command_user(fd, tokens[1], tokens[4]);
+    }
+	// else if (exec_cmd == "PRIVMSG") {
+    //     if (tokens[1][0] == '#') {
+    //         command_privmsg_channel(tokens[1], tokens[2]);
+    //     } else {
+    //         command_privmsg_user(tokens[1], tokens[2]);
+    //     }
+    }
+
+
 }
 
-int Server::command_user(const int fd, const std::string &username, const std::string &realname) {
-    Client *client = &clients_fd[fd];
+// void Server::command_nick(const int fd, const std::string &nickname) {
+//     Client *client = &clients_fd[fd];
 
-    if (client->get_username().empty()) return -1;  // 이미 등록되어있으면
-    // :molybdenum.libera.chat 462 younghoc :You are already connected and cannot handshake again
+//     if (!client->get_nickname().empty()) {
+//         clients_nickname.erase(client->get_nickname());
+//     }
+//     clients_nickname[nickname] = client;
 
-    client->set_nickname(username);
-    client->set_realname(realname);
+//     client->set_nickname(nickname);
+// }
 
-    return 0;
-}
+// int Server::command_user(const int fd, const std::string &username, const std::string &realname) {
+//     Client *client = &clients_fd[fd];
+
+//     if (client->get_username().empty()) return -1;  // 이미 등록되어있으면
+//     // :molybdenum.libera.chat 462 younghoc :You are already connected and cannot handshake again
+
+//     client->set_nickname(username);
+//     client->set_realname(realname);
+
+//     return 0;
+// }
+

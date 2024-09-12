@@ -36,10 +36,21 @@ private:
 	int open_server();
 	void add_event(uintptr_t ident, int16_t filter);
 
-	void command_nick(const int fd, const std::string &nickname);
-	int command_user(const int fd, const std::string &username, const std::string &realname);
-	void command_privmsg_user(const std::string &nickname, const std::string &content);
-	void command_privmsg_channel(const std::string &channelname, const std::string &content);
+	// hyowchoi
+	void command_parsing(const int fd, std::string command);
+	void command_nick(const int fd, std::vector<std::string> cmds);
+	int command_user(const int fd, std::vector<std::string> cmds);
+	void command_privmsg_user(const int fd, std::vector<std::string> cmds);
+	void command_privmsg_channel(const int fd, std::vector<std::string> cmds);
+
+	// younghoc
+	void command_join(const int fd, std::vector<std::string> cmds);
+	void command_topic(const int fd, std::vector<std::string> cmds);
+	void command_invite(const int fd, std::vector<std::string> cmds);
+	void command_kick(const int fd, std::vector<std::string> cmds);
+
+	// siychoi
+	void command_mode(const int fd, std::vector<std::string> cmds);
 };
 
 #endif
