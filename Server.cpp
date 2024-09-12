@@ -5,7 +5,6 @@
 #include <unistd.h>
 #include <iostream>
 #include <sstream>
-
 #include "Server.hpp"
 #include "Client.hpp"
 
@@ -103,8 +102,7 @@ int Server::open_server() {
 
 
 void Server::command_parsing(const int fd, std::string command) {
-    const std::string Commands[] = {
-        "NICK", "USER", "PRIVMSG", "JOIN", "MODE", "TOPIC", "KICK", "INVITE" };
+    const std::string Commands[] = {"NICK", "USER", "PRIVMSG", "JOIN", "MODE", "TOPIC", "KICK", "INVITE" };
     std::stringstream ss(command);
     std::string exec_cmd, token;
     std::vector<std::string> tokens;
@@ -123,9 +121,9 @@ void Server::command_parsing(const int fd, std::string command) {
     }
 
     if (exec_cmd == "NICK") {
-        command_nick(fd, tokens[1]);
+        command_nick(fd, tokens);
     } else if (exec_cmd == "USER") {
-        command_user(fd, tokens[1], tokens[4]);
+        // command_user(fd, tokens[1], tokens[4]);
     }
 	// else if (exec_cmd == "PRIVMSG") {
     //     if (tokens[1][0] == '#') {
