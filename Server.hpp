@@ -39,7 +39,7 @@ private:
 	// hyowchoi
 	void command_parsing(const int fd, std::string command);
 	void command_nick(const int fd, std::vector<std::string> cmds);
-	int command_user(const int fd, std::vector<std::string> cmds);
+	void command_user(const int fd, std::vector<std::string> cmds);
 	void command_privmsg_user(const int fd, std::vector<std::string> cmds);
 	void command_privmsg_channel(const int fd, std::vector<std::string> cmds);
 
