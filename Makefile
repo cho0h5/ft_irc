@@ -25,6 +25,6 @@ re:
 	make all
 
 test: all
-	./$(NAME) 8080 password
+	./$(NAME) 6667 password
 
 .PHONY: all clean fclean re
