@@ -113,8 +113,24 @@ void Server::command_user(const int fd, const std::vector<std::string> &cmds) {
 }
 
 void Server::command_privmsg_user(const int fd, const std::vector<std::string> &cmds) {
-    (void)fd;
-    (void)cmds;
+    if (cmds.size() == 1) {
+        send_error(fd, 411);
+        return;
+    }
+
+    if (cmds.size() == 2) {
+        send_error(fd, 412);
+        return;
+    }
+
+    const std::string recipient = cmds[1];
+    const std::string message = cmds[2];
+
+    std::map<std::string, Client*>::const_iterator it = clients_nickname.find(recipient);
+    if (it == clients_nickname.end()) {
+        send_error(fd, 401);
+        return;
+    }
 }
 
 void Server::command_privmsg_channel(const int fd, const std::vector<std::string> &cmds) {
