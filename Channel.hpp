@@ -20,9 +20,12 @@ class Channel {
 
         void    unset_option_i();
         void    unset_option_t();
-        void    unset_option_k();
+        void    unset_option_k(std::string key);
         void    unset_option_o(Client* client);
         void    unset_option_l();
+
+        std::vector<Client*>& get_clients();
+        std::vector<Client*>& get_operators();
 
     private:
         std::vector<Client*> clients;
