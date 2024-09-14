@@ -105,6 +105,7 @@ void Server::command_user(const int fd, const std::vector<std::string> &cmds) {
     }
     // change username
     it->second.set_username(cmds[1]);
+    it->second.set_realname(cmds[4]);   // TODO: realname에 대해 콜론, 띄어쓰기 처리해야함
 
     if (it->second.is_connect_possible()) {
         welcome(fd);

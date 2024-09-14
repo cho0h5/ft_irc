@@ -146,7 +146,7 @@ void Server::command_parsing(const int fd, const std::string &command) {
     if (exec_cmd == "NICK") {
         command_nick(fd, tokens);
     } else if (exec_cmd == "USER") {
-        // command_user(fd, tokens[1], tokens[4]);
+        command_user(fd, tokens);
     }
 	// else if (exec_cmd == "PRIVMSG") {
     //     if (tokens[1][0] == '#') {
