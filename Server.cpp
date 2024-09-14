@@ -108,7 +108,6 @@ void Server::set_kqueue_write_event() {
     for (std::map<int, Client>::const_iterator it = clients_fd.begin(); it != clients_fd.end(); it++) {
         const Client client = it->second;
 
-        std::cout << "set: " << client.is_write_buffer_empty() << '\n';
         if (client.is_write_buffer_empty()) {
             add_event(client.get_fd(), EVFILT_WRITE, EV_ADD | EV_DISABLE);
         } else {
