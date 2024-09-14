@@ -1,6 +1,7 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
+#include <cstdint>
 #include <vector>
 #include <map>
 #include <sys/event.h>
@@ -34,8 +35,9 @@ private:
 	unsigned int server_socket_fd;
 
 	int create_kqueue();
+    void set_kqueue_write_event();
 	int open_server();
-	void add_event(uintptr_t ident, int16_t filter);
+	void add_event(uintptr_t ident, int16_t filter, uint16_t flags);
 
 	// hyowchoi
 	void command_nick(const int fd, const std::vector<std::string> &cmds);

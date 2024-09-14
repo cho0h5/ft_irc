@@ -20,12 +20,13 @@ Server::Server(char* port, std::string password) : server_password(password) {
 		std::cout << "error\n";
 		exit(EXIT_FAILURE);
 	}
-	add_event(server_socket_fd, EVFILT_READ);
+	add_event(server_socket_fd, EVFILT_READ, EV_ADD | EV_ENABLE);
 }
 
 int Server::run() {
 	std::cout << "run\n";
 	while (true) {
+	    set_kqueue_write_event();
 		int nev = kevent(kqueue_fd, changelist.data(), changelist.size(),
 				eventlist, EVENTLIST_SIZE, NULL);
 		changelist.clear();
@@ -50,8 +51,8 @@ int Server::run() {
 					std::string client_ip_str(client_ip);
 					const Client client(client_fd, client_ip_str);
 					clients_fd[client_fd] = client;
-					add_event(client_fd, EVFILT_READ);
-					add_event(client_fd, EVFILT_WRITE);
+					add_event(client_fd, EVFILT_READ, EV_ADD | EV_ENABLE);
+					add_event(client_fd, EVFILT_WRITE, EV_ADD | EV_DISABLE);
 				} else if (event.filter == EVFILT_READ) {
 					char buf[1024];
 					int n = read(event.ident, buf, 1024);
@@ -68,10 +69,10 @@ int Server::run() {
 	}
 }
 
-void Server::add_event(uintptr_t ident, int16_t filter) {
+void Server::add_event(uintptr_t ident, int16_t filter, uint16_t flags) {
 	struct kevent event;
 
-	EV_SET(&event, ident, filter, EV_ADD | EV_ENABLE, 0, 0, 0);
+	EV_SET(&event, ident, filter, flags, 0, 0, 0);
 	changelist.push_back(event);
 }
 
@@ -103,6 +104,18 @@ int Server::open_server() {
 	return 0;
 }
 
+void Server::set_kqueue_write_event() {
+    for (std::map<int, Client>::const_iterator it = clients_fd.begin(); it != clients_fd.end(); it++) {
+        const Client client = it->second;
+
+        std::cout << "set: " << client.is_write_buffer_empty() << '\n';
+        if (client.is_write_buffer_empty()) {
+            add_event(client.get_fd(), EVFILT_WRITE, EV_ADD | EV_DISABLE);
+        } else {
+            add_event(client.get_fd(), EVFILT_WRITE, EV_ADD | EV_ENABLE);
+        }
+    }
+}
 
 void Server::command_parsing(const int fd, const std::string &command) {
     const std::string Commands[] = {"NICK", "USER", "PRIVMSG", "JOIN", "MODE", "TOPIC", "KICK", "INVITE" };
