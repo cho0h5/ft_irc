@@ -108,7 +108,7 @@ void Server::command_parsing(const int fd, std::string command) {
     std::vector<std::string> tokens;
 
     // find execute commands
-    int size = sizeof(Commands) / sizeof(Commands[0]);
+    const int size = sizeof(Commands) / sizeof(Commands[0]);
     for (int i = 0; i < size; i++) {
         const std::string &cmd = Commands[i];
         if (command.find(cmd) == 0) {
