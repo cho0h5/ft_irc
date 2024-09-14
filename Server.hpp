@@ -15,6 +15,7 @@ public:
 	Server(char* port, std::string password);
 
 	int run();	// return value: error code
+	void command_parsing(const int fd, std::string command);
 
 private:
 	//
@@ -37,7 +38,6 @@ private:
 	void add_event(uintptr_t ident, int16_t filter);
 
 	// hyowchoi
-	void command_parsing(const int fd, std::string command);
 	void command_nick(const int fd, std::vector<std::string> cmds);
 	void command_user(const int fd, std::vector<std::string> cmds);
 	void command_privmsg_user(const int fd, std::vector<std::string> cmds);

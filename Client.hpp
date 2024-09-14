@@ -3,6 +3,8 @@
 
 #include <string>
 
+class Server;
+
 class Client {
     public:
         Client();
@@ -18,7 +20,7 @@ class Client {
         void set_realname(const std::string &realname);
         void set_hostname(const std::string &hostname);
 
-        void read_handler(const char *buf, const ssize_t n);
+        void read_handler(Server *server, const char *buf, const ssize_t n);
 
     private:
         int fd;

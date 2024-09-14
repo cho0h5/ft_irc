@@ -59,7 +59,7 @@ int Server::run() {
 						close(event.ident);
 						continue;
 					}
-					clients_fd[event.ident].read_handler(buf, n);
+					clients_fd[event.ident].read_handler(this, buf, n);
 				}
 				// TODO: EVFILT_WRITE
 			}
