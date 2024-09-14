@@ -54,6 +54,10 @@ void Client::read_handler(Server *server, const char *buf, const ssize_t n) {
     }
 }
 
+bool Client::is_write_buffer_empty() const {
+    return write_buffer.empty();
+}
+
 void Client::send_message(const std::string message) {
     if (message.empty()) return;
 
