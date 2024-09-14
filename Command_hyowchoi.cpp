@@ -86,7 +86,7 @@ void Server::command_user(const int fd, const std::vector<std::string> &cmds) {
     }
 
     // no username : ERR_NEEDMOREPARAMS, 461
-    if (cmds.size() != 5 || cmds[1].empty() || cmds[2] != "0" || cmds[3] != "*" || cmds[4].empty()) {
+    if (cmds.size() != 5 || cmds[1].empty() || cmds[4].empty()) {
         send_error(fd, 461);
         return;
     }
