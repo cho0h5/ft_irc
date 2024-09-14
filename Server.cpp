@@ -35,33 +35,32 @@ int Server::run() {
 			perror("kqueue");
 			exit(EXIT_FAILURE);
 		}
-		else {
-			for (int i = 0; i < nev; i++) {
-				const struct kevent event = eventlist[i];
 
-				if (event.flags & EV_ERROR) {
-					perror("kqueue");
-					exit(EXIT_FAILURE);
-				} else if (event.ident == server_socket_fd) {
-    				struct sockaddr_in client_addr;
-                    socklen_t client_addr_len = sizeof(client_addr);
-					const int client_fd = accept(server_socket_fd, (struct sockaddr *)&client_addr, &client_addr_len);
-					char client_ip[INET_ADDRSTRLEN];
-					inet_ntop(AF_INET, &client_addr.sin_addr, client_ip, INET_ADDRSTRLEN);
-					std::string client_ip_str(client_ip);
-					const Client client(client_fd, client_ip_str);
-					clients_fd[client_fd] = client;
-					add_event(client_fd, EVFILT_READ, EV_ADD | EV_ENABLE);
-					add_event(client_fd, EVFILT_WRITE, EV_ADD | EV_DISABLE);
-				} else if (event.filter == EVFILT_READ) {
-					const int ret = clients_fd[event.ident].read_handler(this);
+		for (int i = 0; i < nev; i++) {
+			const struct kevent event = eventlist[i];
 
-					if (ret) {
-					    // TODO: remove this client
-					}
-				} else if (event.filter == EVFILT_WRITE) {
-				    clients_fd[event.ident].write_handler();
+			if (event.flags & EV_ERROR) {
+				perror("kqueue");
+				exit(EXIT_FAILURE);
+			} else if (event.ident == server_socket_fd) {
+				struct sockaddr_in client_addr;
+                socklen_t client_addr_len = sizeof(client_addr);
+				const int client_fd = accept(server_socket_fd, (struct sockaddr *)&client_addr, &client_addr_len);
+				char client_ip[INET_ADDRSTRLEN];
+				inet_ntop(AF_INET, &client_addr.sin_addr, client_ip, INET_ADDRSTRLEN);
+				std::string client_ip_str(client_ip);
+				const Client client(client_fd, client_ip_str);
+				clients_fd[client_fd] = client;
+				add_event(client_fd, EVFILT_READ, EV_ADD | EV_ENABLE);
+				add_event(client_fd, EVFILT_WRITE, EV_ADD | EV_DISABLE);
+			} else if (event.filter == EVFILT_READ) {
+				const int ret = clients_fd[event.ident].read_handler(this);
+
+				if (ret) {
+				    // TODO: remove this client
 				}
+			} else if (event.filter == EVFILT_WRITE) {
+			    clients_fd[event.ident].write_handler();
 			}
 		}
 	}
