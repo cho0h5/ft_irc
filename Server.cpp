@@ -11,14 +11,14 @@
 Server::Server(char* port, std::string password) : server_password(password) {
 	if (std::strlen(port) > 6 || std::atoi(port) < 1024) {
 		std::cout << "error\n";
-		return;
+		exit(EXIT_FAILURE);
 	}
 	server_port = std::atoi(port);
 
 	create_kqueue();
 	if (open_server()) {
 		std::cout << "error\n";
-		return;
+		exit(EXIT_FAILURE);
 	}
 	add_event(server_socket_fd, EVFILT_READ);
 }
@@ -59,7 +59,7 @@ int Server::run() {
 						close(event.ident);
 						continue;
 					}
-					clients_fd[event.ident].read_handler(buf, n);
+					clients_fd[event.ident].read_handler(this, buf, n);
 				}
 				// TODO: EVFILT_WRITE
 			}
@@ -93,7 +93,9 @@ int Server::open_server() {
 	addr.sin_port = htons(server_port);
 	addr.sin_addr.s_addr = INADDR_ANY;
 
-	bind(server_socket_fd, (struct sockaddr*)&addr, sizeof(addr));
+	if (bind(server_socket_fd, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
+	   return -1;
+	}
 
 	listen(server_socket_fd, 1);
 
@@ -101,14 +103,16 @@ int Server::open_server() {
 }
 
 
-void Server::command_parsing(const int fd, std::string command) {
+void Server::command_parsing(const int fd, const std::string &command) {
     const std::string Commands[] = {"NICK", "USER", "PRIVMSG", "JOIN", "MODE", "TOPIC", "KICK", "INVITE" };
     std::stringstream ss(command);
     std::string exec_cmd, token;
     std::vector<std::string> tokens;
 
     // find execute commands
-    for (const std::string &cmd : Commands) {
+    const int size = sizeof(Commands) / sizeof(Commands[0]);
+    for (int i = 0; i < size; i++) {
+        const std::string &cmd = Commands[i];
         if (command.find(cmd) == 0) {
             exec_cmd = cmd;
             break;
@@ -131,31 +135,13 @@ void Server::command_parsing(const int fd, std::string command) {
     //     } else {
     //         command_privmsg_user(tokens[1], tokens[2]);
     //     }
-    }
+    // }
 
 
 }
 
-// void Server::command_nick(const int fd, const std::string &nickname) {
-//     Client *client = &clients_fd[fd];
-
-//     if (!client->get_nickname().empty()) {
-//         clients_nickname.erase(client->get_nickname());
-//     }
-//     clients_nickname[nickname] = client;
-
-//     client->set_nickname(nickname);
-// }
-
-// int Server::command_user(const int fd, const std::string &username, const std::string &realname) {
-//     Client *client = &clients_fd[fd];
-
-//     if (client->get_username().empty()) return -1;  // 이미 등록되어있으면
-//     // :molybdenum.libera.chat 462 younghoc :You are already connected and cannot handshake again
-
-//     client->set_nickname(username);
-//     client->set_realname(realname);
-
-//     return 0;
-// }
-
+void Server::send_error(const int fd, const int error_code) {
+    // TODO: 431, 432, 433, 461, 462
+    (void)fd;
+    (void)error_code;
+}

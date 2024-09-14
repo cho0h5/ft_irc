@@ -19,8 +19,10 @@
 //6. parameter가 없는지 확인(461)
 //	6-1. o option에 nick이 존재하는지 확인(401)
 
-void Server::command_mode(const int fd, std::vector<std::string> cmds) {
+void Server::command_mode(const int fd, std::vector<std::string> &cmds) {
 
+	(void)fd;
+  	(void)cmds;
 	std::string	channel_name, user_name;	//username은 어떻게 정의하지? fd로 하는 건가
 	std::map<bool, std::string>	options;
 
