@@ -72,7 +72,11 @@ void Server::command_nick(const int fd, const std::vector<std::string> &cmds) {
     }
     // change nickname
     std::map<int, Client>::iterator it = clients_fd.find(fd);
-    it->second.set_nickname(cmds[1]);
+    Client &client = it->second;
+    if (client.get_nickname().empty())
+        clients_nickname.erase(client.get_nickname());
+    client.set_nickname(cmds[1]);
+    clients_nickname[cmds[1]] = &clients_fd[fd];
 
     if (it->second.is_connect_possible()) {
         welcome(fd);
@@ -126,11 +130,15 @@ void Server::command_privmsg_user(const int fd, const std::vector<std::string> &
     const std::string recipient = cmds[1];
     const std::string message = cmds[2];
 
-    std::map<std::string, Client*>::const_iterator it = clients_nickname.find(recipient);
+    std::map<std::string, Client*>::iterator it = clients_nickname.find(recipient);
     if (it == clients_nickname.end()) {
         send_error(fd, 401);
         return;
     }
+
+    Client &client = *it->second;
+    const std::string nickname = client.get_nickname();
+    client.send_message(":" + client.get_identifier() + " PRIVMSG " + nickname + " :" + message);
 }
 
 void Server::command_privmsg_channel(const int fd, const std::vector<std::string> &cmds) {
