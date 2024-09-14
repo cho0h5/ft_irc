@@ -77,3 +77,7 @@ void Client::send_message(const std::string message) {
     write_buffer += message;
     write_buffer += "\r\n";
 }
+
+bool Client::is_connect_possible() const {
+    return (!nickname.empty() && !username.empty() && !realname.empty() && !hostname.empty());
+}

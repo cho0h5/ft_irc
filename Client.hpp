@@ -26,6 +26,8 @@ class Client {
         bool is_write_buffer_empty() const;
         void send_message(const std::string message);
 
+        bool is_connect_possible() const;
+
     private:
         int fd;
         std::string nickname;
