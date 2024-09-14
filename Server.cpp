@@ -142,4 +142,6 @@ void Server::command_parsing(const int fd, std::string command) {
 
 void Server::send_error(const int fd, const int error_code) {
     // TODO: 431, 432, 433, 461, 462
+    (void)fd;
+    (void)error_code;
 }
