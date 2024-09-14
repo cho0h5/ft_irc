@@ -139,8 +139,17 @@ void Server::command_parsing(const int fd, const std::string &command) {
     }
 
     // tokenize
+    bool trailing = false;
     while (ss >> token) {
-        tokens.push_back(token);
+        if (!trailing) {
+            tokens.push_back(token);
+            if (token.at(0) == ':') {
+                tokens.back().erase(0, 1);
+                trailing = true;
+            }
+        } else {
+            tokens.back().append(" " + token);
+        }
     }
 
     if (exec_cmd == "NICK") {
