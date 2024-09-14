@@ -37,7 +37,7 @@ int Server::run() {
 		}
 		else {
 			for (int i = 0; i < nev; i++) {
-				struct kevent event = eventlist[i];
+				const struct kevent event = eventlist[i];
 
 				if (event.flags & EV_ERROR) {
 					perror("kqueue");
