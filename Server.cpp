@@ -103,7 +103,7 @@ int Server::open_server() {
 }
 
 
-void Server::command_parsing(const int fd, std::string command) {
+void Server::command_parsing(const int fd, const std::string &command) {
     const std::string Commands[] = {"NICK", "USER", "PRIVMSG", "JOIN", "MODE", "TOPIC", "KICK", "INVITE" };
     std::stringstream ss(command);
     std::string exec_cmd, token;

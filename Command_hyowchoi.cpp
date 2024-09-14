@@ -39,7 +39,7 @@
 
 // NICK <new_nickname>
 // TODO : client 객체 생성 시 nickname 임의로 지정
-void Server::command_nick(const int fd, std::vector<std::string> cmds) {
+void Server::command_nick(const int fd, const std::vector<std::string> &cmds) {
 
     // not NICK command
     if (cmds[0] != "NICK") {
@@ -75,7 +75,7 @@ void Server::command_nick(const int fd, std::vector<std::string> cmds) {
     it->second.set_nickname(cmds[1]);
 }
 
-void Server::command_user(const int fd, std::vector<std::string> cmds) {
+void Server::command_user(const int fd, const std::vector<std::string> &cmds) {
     // not USER command
     if (cmds[0] != "USER") {
         return;
@@ -103,12 +103,12 @@ void Server::command_user(const int fd, std::vector<std::string> cmds) {
     it->second.set_username(cmds[1]);
 }
 
-void Server::command_privmsg_user(const int fd, std::vector<std::string> cmds) {
+void Server::command_privmsg_user(const int fd, const std::vector<std::string> &cmds) {
     (void)fd;
     (void)cmds;
 }
 
-void Server::command_privmsg_channel(const int fd, std::vector<std::string> cmds) {
+void Server::command_privmsg_channel(const int fd, const std::vector<std::string> &cmds) {
     (void)fd;
     (void)cmds;
 }

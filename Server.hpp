@@ -15,7 +15,7 @@ public:
 	Server(char* port, std::string password);
 
 	int run();	// return value: error code
-	void command_parsing(const int fd, std::string command);
+	void command_parsing(const int fd, const std::string &command);
 
 private:
 	//
@@ -38,19 +38,19 @@ private:
 	void add_event(uintptr_t ident, int16_t filter);
 
 	// hyowchoi
-	void command_nick(const int fd, std::vector<std::string> cmds);
-	void command_user(const int fd, std::vector<std::string> cmds);
-	void command_privmsg_user(const int fd, std::vector<std::string> cmds);
-	void command_privmsg_channel(const int fd, std::vector<std::string> cmds);
+	void command_nick(const int fd, const std::vector<std::string> &cmds);
+	void command_user(const int fd, const std::vector<std::string> &cmds);
+	void command_privmsg_user(const int fd, const std::vector<std::string> &cmds);
+	void command_privmsg_channel(const int fd, const std::vector<std::string> &cmds);
 
 	// younghoc
-	void command_join(const int fd, std::vector<std::string> cmds);
-	void command_topic(const int fd, std::vector<std::string> cmds);
-	void command_invite(const int fd, std::vector<std::string> cmds);
-	void command_kick(const int fd, std::vector<std::string> cmds);
+	void command_join(const int fd, const std::vector<std::string> &cmds);
+	void command_topic(const int fd, const std::vector<std::string> &cmds);
+	void command_invite(const int fd, const std::vector<std::string> &cmds);
+	void command_kick(const int fd, const std::vector<std::string> &cmds);
 
 	// siychoi
-	void command_mode(const int fd, std::vector<std::string> cmds);
+	void command_mode(const int fd, const std::vector<std::string> &cmds);
 
 	void send_error(const int fd, const int error_code);
 };
