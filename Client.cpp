@@ -44,7 +44,12 @@ void Client::set_hostname(const std::string &hostname) {
     this->hostname = hostname;
 }
 
-void Client::read_handler(Server *server, const char *buf, const ssize_t n) {
+int Client::read_handler(Server *server) {
+    char buf[1024];
+    const int n = read(fd, buf, 1024);
+    if (n <= 0) {
+		return -1;
+	}
     read_buffer.append(buf, n);
 
     size_t pos;
@@ -53,6 +58,8 @@ void Client::read_handler(Server *server, const char *buf, const ssize_t n) {
         server->command_parsing(fd, line);
         read_buffer.erase(0, pos + 2);
     }
+
+    return 0;
 }
 
 void Client::write_handler() {

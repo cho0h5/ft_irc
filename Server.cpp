@@ -54,13 +54,11 @@ int Server::run() {
 					add_event(client_fd, EVFILT_READ, EV_ADD | EV_ENABLE);
 					add_event(client_fd, EVFILT_WRITE, EV_ADD | EV_DISABLE);
 				} else if (event.filter == EVFILT_READ) {
-					char buf[1024];
-					int n = read(event.ident, buf, 1024);
-					if (n <= 0) {
-						close(event.ident);
-						continue;
+					const int ret = clients_fd[event.ident].read_handler(this);
+
+					if (ret) {
+					    // TODO: remove this client
 					}
-					clients_fd[event.ident].read_handler(this, buf, n);
 				} else if (event.filter == EVFILT_WRITE) {
 				    clients_fd[event.ident].write_handler();
 				}

@@ -20,7 +20,7 @@ class Client {
         void set_realname(const std::string &realname);
         void set_hostname(const std::string &hostname);
 
-        void read_handler(Server *server, const char *buf, const ssize_t n);
+        int read_handler(Server *server);
         void write_handler();
 
         bool is_write_buffer_empty() const;
