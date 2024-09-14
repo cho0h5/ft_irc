@@ -158,14 +158,13 @@ void Server::command_parsing(const int fd, const std::string &command) {
         command_nick(fd, tokens);
     } else if (exec_cmd == "USER") {
         command_user(fd, tokens);
+    } else if (exec_cmd == "PRIVMSG") {
+        if (tokens[1][0] == '#') {
+            command_privmsg_channel(fd, tokens);
+        } else {
+            command_privmsg_user(fd, tokens);
+        }
     }
-	// else if (exec_cmd == "PRIVMSG") {
-    //     if (tokens[1][0] == '#') {
-    //         command_privmsg_channel(tokens[1], tokens[2]);
-    //     } else {
-    //         command_privmsg_user(tokens[1], tokens[2]);
-    //     }
-    // }
 
 
 }
