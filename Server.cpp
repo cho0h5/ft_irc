@@ -93,7 +93,9 @@ int Server::open_server() {
 	addr.sin_port = htons(server_port);
 	addr.sin_addr.s_addr = INADDR_ANY;
 
-	bind(server_socket_fd, (struct sockaddr*)&addr, sizeof(addr));
+	if (bind(server_socket_fd, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
+	   return -1;
+	}
 
 	listen(server_socket_fd, 1);
 
