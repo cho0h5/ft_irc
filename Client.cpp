@@ -28,6 +28,10 @@ std::string Client::get_hostname() const {
     return hostname;
 }
 
+std::string Client::get_identifier() const {
+    return get_nickname() + "!~" + get_username() + "@" + get_hostname();
+}
+
 void Client::set_nickname(const std::string &nickname) {
     this->nickname = nickname;
 }
