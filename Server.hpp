@@ -51,6 +51,8 @@ private:
 
 	// siychoi
 	void command_mode(const int fd, std::vector<std::string> cmds);
+
+	void send_error(const int fd, const int error_code);
 };
 
 #endif
