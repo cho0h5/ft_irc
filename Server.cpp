@@ -108,7 +108,9 @@ void Server::command_parsing(const int fd, std::string command) {
     std::vector<std::string> tokens;
 
     // find execute commands
-    for (const std::string &cmd : Commands) {
+    int size = sizeof(Commands) / sizeof(Commands[0]);
+    for (int i = 0; i < size; i++) {
+        const std::string &cmd = Commands[i];
         if (command.find(cmd) == 0) {
             exec_cmd = cmd;
             break;
@@ -131,7 +133,7 @@ void Server::command_parsing(const int fd, std::string command) {
     //     } else {
     //         command_privmsg_user(tokens[1], tokens[2]);
     //     }
-    }
+    // }
 
 
 }
@@ -158,4 +160,3 @@ void Server::command_parsing(const int fd, std::string command) {
 
 //     return 0;
 // }
-

@@ -20,7 +20,7 @@ private:
 	//
 	std::map<std::string, Channel> channels;
 	std::map<std::string, Client*> clients_nickname; // nickname -> client
-	std::map<int, Client*> clients_fd; // fd -> client
+	std::map<int, Client> clients_fd; // fd -> client
 
 	std::string server_password;
 	int server_port;

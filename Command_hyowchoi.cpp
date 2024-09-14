@@ -40,12 +40,12 @@
 // NICK <new_nickname>
 // TODO : client 객체 생성 시 nickname 임의로 지정
 void Server::command_nick(const int fd, std::vector<std::string> cmds) {
-    
+
     // not NICK command
     if (cmds[0] != "NICK") {
         return;
     }
-    
+
     // no new_nickname : ERR_NONICKNAMEGIVEN, 431
     if (cmds.size() != 2) {
         // send_error(fd, 431);
@@ -57,9 +57,10 @@ void Server::command_nick(const int fd, std::vector<std::string> cmds) {
         // send_error(fd, 433);
         return;
     }
-    
+
     // check valid nickname
-    for (char c : cmds[1]) {
+    for (unsigned long i = 0; i < cmds[1].size(); i++) {
+        const char c = i;
         if (!(('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z') || ('0' <= c && c <= '9'))) {
             // send_error(fd, 432);
             return;
@@ -70,8 +71,8 @@ void Server::command_nick(const int fd, std::vector<std::string> cmds) {
         return;
     }
     // change nickname
-    std::map<int, Client*>::iterator it = clients_fd.find(fd);
-    it->second->set_nickname(cmds[1]);
+    std::map<int, Client>::iterator it = clients_fd.find(fd);
+    it->second.set_nickname(cmds[1]);
 }
 
 void Server::command_user(const int fd, std::vector<std::string> cmds) {
@@ -87,8 +88,8 @@ void Server::command_user(const int fd, std::vector<std::string> cmds) {
     }
 
     // already registered username : ERR_ALREADYREGISTRED, 462
-    std::map<int, Client*>::iterator it = clients_fd.find(fd);
-    if (it->second->get_username() != "") {
+    std::map<int, Client>::iterator it = clients_fd.find(fd);
+    if (it->second.get_username() != "") {
         // send_error(fd, 462);
         return;
     }
@@ -99,14 +100,15 @@ void Server::command_user(const int fd, std::vector<std::string> cmds) {
         return;
     }
     // change username
-    it->second->set_username(cmds[1]);
+    it->second.set_username(cmds[1]);
 }
 
 void Server::command_privmsg_user(const int fd, std::vector<std::string> cmds) {
-
+    (void)fd;
+    (void)cmds;
 }
 
 void Server::command_privmsg_channel(const int fd, std::vector<std::string> cmds) {
-
+    (void)fd;
+    (void)cmds;
 }
-
