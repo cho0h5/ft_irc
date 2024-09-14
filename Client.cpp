@@ -1,5 +1,6 @@
 #include "Server.hpp"
 #include "Client.hpp"
+#include <unistd.h>
 
 Client::Client() {
 }
@@ -52,6 +53,11 @@ void Client::read_handler(Server *server, const char *buf, const ssize_t n) {
         server->command_parsing(fd, line);
         read_buffer.erase(0, pos + 2);
     }
+}
+
+void Client::write_handler() {
+    const ssize_t n = write(fd, write_buffer.c_str(), write_buffer.size());
+    write_buffer.erase(0, n);
 }
 
 bool Client::is_write_buffer_empty() const {

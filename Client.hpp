@@ -21,6 +21,8 @@ class Client {
         void set_hostname(const std::string &hostname);
 
         void read_handler(Server *server, const char *buf, const ssize_t n);
+        void write_handler();
+
         bool is_write_buffer_empty() const;
         void send_message(const std::string message);
 

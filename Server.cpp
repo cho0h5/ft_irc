@@ -51,7 +51,7 @@ int Server::run() {
 					const Client client(client_fd, client_ip_str);
 					clients_fd[client_fd] = client;
 					add_event(client_fd, EVFILT_READ);
-					// add_event(client_socket_fd, EVFILT_WRITE);
+					add_event(client_fd, EVFILT_WRITE);
 				} else if (event.filter == EVFILT_READ) {
 					char buf[1024];
 					int n = read(event.ident, buf, 1024);
@@ -60,8 +60,9 @@ int Server::run() {
 						continue;
 					}
 					clients_fd[event.ident].read_handler(this, buf, n);
+				} else if (event.filter == EVFILT_WRITE) {
+				    clients_fd[event.ident].write_handler();
 				}
-				// TODO: EVFILT_WRITE
 			}
 		}
 	}
