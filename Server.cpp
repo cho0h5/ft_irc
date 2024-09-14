@@ -23,6 +23,10 @@ Server::Server(char* port, std::string password) : server_password(password) {
 	add_event(server_socket_fd, EVFILT_READ, EV_ADD | EV_ENABLE);
 }
 
+std::string Server::get_servername() const {
+    return "ircserver";
+}
+
 int Server::run() {
 	std::cout << "run\n";
 	while (true) {
@@ -111,6 +115,11 @@ void Server::set_kqueue_write_event() {
             add_event(client.get_fd(), EVFILT_WRITE, EV_ADD | EV_ENABLE);
         }
     }
+}
+
+void Server::welcome(const int fd) {
+    const std::string &nickname = clients_fd[fd].get_nickname();
+    clients_fd[fd].send_message(":" + get_servername() + " 001 " + nickname + " :Welcome!");
 }
 
 void Server::command_parsing(const int fd, const std::string &command) {

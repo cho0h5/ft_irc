@@ -73,6 +73,10 @@ void Server::command_nick(const int fd, const std::vector<std::string> &cmds) {
     // change nickname
     std::map<int, Client>::iterator it = clients_fd.find(fd);
     it->second.set_nickname(cmds[1]);
+
+    if (it->second.is_connect_possible()) {
+        welcome(fd);
+    }
 }
 
 void Server::command_user(const int fd, const std::vector<std::string> &cmds) {
@@ -101,6 +105,10 @@ void Server::command_user(const int fd, const std::vector<std::string> &cmds) {
     }
     // change username
     it->second.set_username(cmds[1]);
+
+    if (it->second.is_connect_possible()) {
+        welcome(fd);
+    }
 }
 
 void Server::command_privmsg_user(const int fd, const std::vector<std::string> &cmds) {

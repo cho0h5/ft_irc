@@ -34,10 +34,14 @@ private:
 	int kqueue_fd;
 	unsigned int server_socket_fd;
 
+	std::string get_servername() const;
+
 	int create_kqueue();
     void set_kqueue_write_event();
 	int open_server();
 	void add_event(uintptr_t ident, int16_t filter, uint16_t flags);
+
+	void welcome(const int fd);
 
 	// hyowchoi
 	void command_nick(const int fd, const std::vector<std::string> &cmds);
