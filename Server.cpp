@@ -128,6 +128,8 @@ void Server::command_parsing(const int fd, const std::string &command) {
     std::string exec_cmd, token;
     std::vector<std::string> tokens;
 
+    std::cout << command << '\n';
+
     // find execute commands
     const int size = sizeof(Commands) / sizeof(Commands[0]);
     for (int i = 0; i < size; i++) {
