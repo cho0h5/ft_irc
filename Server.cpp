@@ -137,26 +137,3 @@ void Server::command_parsing(const int fd, std::string command) {
 
 
 }
-
-// void Server::command_nick(const int fd, const std::string &nickname) {
-//     Client *client = &clients_fd[fd];
-
-//     if (!client->get_nickname().empty()) {
-//         clients_nickname.erase(client->get_nickname());
-//     }
-//     clients_nickname[nickname] = client;
-
-//     client->set_nickname(nickname);
-// }
-
-// int Server::command_user(const int fd, const std::string &username, const std::string &realname) {
-//     Client *client = &clients_fd[fd];
-
-//     if (client->get_username().empty()) return -1;  // 이미 등록되어있으면
-//     // :molybdenum.libera.chat 462 younghoc :You are already connected and cannot handshake again
-
-//     client->set_nickname(username);
-//     client->set_realname(realname);
-
-//     return 0;
-// }
