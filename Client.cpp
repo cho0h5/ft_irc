@@ -53,3 +53,10 @@ void Client::read_handler(Server *server, const char *buf, const ssize_t n) {
         read_buffer.erase(0, pos + 2);
     }
 }
+
+void Client::send_message(const std::string message) {
+    if (message.empty()) return;
+
+    write_buffer += message;
+    write_buffer += "\r\n";
+}

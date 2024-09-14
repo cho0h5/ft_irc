@@ -21,6 +21,7 @@ class Client {
         void set_hostname(const std::string &hostname);
 
         void read_handler(Server *server, const char *buf, const ssize_t n);
+        void send_message(const std::string message);
 
     private:
         int fd;
@@ -30,5 +31,6 @@ class Client {
         std::string hostname;
 
         std::string read_buffer;
+        std::string write_buffer;
 };
 #endif
