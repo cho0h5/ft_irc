@@ -136,7 +136,7 @@ void Server::command_privmsg_user(const int fd, const std::vector<std::string> &
         return;
     }
 
-    Client &client = *it->second;
+    Client &client = clients_fd[fd];
     const std::string nickname = client.get_nickname();
     client.send_message(":" + client.get_identifier() + " PRIVMSG " + nickname + " :" + message);
 }
