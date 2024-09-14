@@ -2,7 +2,7 @@
 #define CHANNEL_HPP
 
 #include <string>
-#include <vector>
+#include <map>
 
 #include "Client.hpp"
 
@@ -24,12 +24,12 @@ class Channel {
         void    unset_option_o(Client* client);
         void    unset_option_l();
 
-        std::vector<Client*>& get_clients();
-        std::vector<Client*>& get_operators();
+        std::map<std::string, Client*>& get_clients();
+        std::map<std::string, Client*>& get_operators();
 
     private:
-        std::vector<Client*> clients;
-        std::vector<Client*> operators;
+        std::map<std::string, Client*> clients;
+        std::map<std::string, Client*> operators;
 
         std::string channel_name;
         std::string channel_topic;
