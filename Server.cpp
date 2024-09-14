@@ -11,14 +11,14 @@
 Server::Server(char* port, std::string password) : server_password(password) {
 	if (std::strlen(port) > 6 || std::atoi(port) < 1024) {
 		std::cout << "error\n";
-		return;
+		exit(EXIT_FAILURE);
 	}
 	server_port = std::atoi(port);
 
 	create_kqueue();
 	if (open_server()) {
 		std::cout << "error\n";
-		return;
+		exit(EXIT_FAILURE);
 	}
 	add_event(server_socket_fd, EVFILT_READ);
 }
