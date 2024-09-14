@@ -19,7 +19,7 @@
 //6. parameter가 없는지 확인(461)
 //	6-1. o option에 nick이 존재하는지 확인(401)
 
-void Server::command_mode(const int fd, std::vector<std::string> &cmds) {
+void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 
 	(void)fd;
   	(void)cmds;
@@ -42,8 +42,8 @@ void Server::command_mode(const int fd, std::vector<std::string> &cmds) {
 		//send_error(fd, 403)
 		return ;
 	}
-	cmds[1].erase(0, 1);
-	channel_name = cmds[1];	
+	channel_name = cmds[1];
+	channel_name.erase(0, 1);
 	if (channels.find(channel_name) == channels.end()) {
 		//send_error(fd, 403)
 		return ;
@@ -54,16 +54,16 @@ void Server::command_mode(const int fd, std::vector<std::string> &cmds) {
 		return ;
 	}
 	
-	std::vector<Client*>& clients = channels.find(channel_name)->second.get_clients();
-	std::vector<Client*>& operators = channels.find(channel_name)->second.get_operators();
+	//std::vector<Client*>& clients = channels.find(channel_name)->second.get_clients();
+	//std::vector<Client*>& operators = channels.find(channel_name)->second.get_operators();
 
 	//4
 	//여기 너무 복잡한데;;
 
 	//5
-	if (find(operators.begin(), operators.end(), user_name) == operators.end()) {
-		//send_error(fd, 482)
-		return ;
-	}
+	//if (find(operators.begin(), operators.end(), user_name) == operators.end()) {
+	//	//send_error(fd, 482)
+	//	return ;
+	//}
 	
 }
