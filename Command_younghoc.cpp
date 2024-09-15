@@ -124,7 +124,7 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
         }
 
     
-        Channel channel = iter->second;
+        Channel& channel = iter->second;
         if (keys[i] != channel.get_key()) {
             // incorrect key : ERR_BADCHANNELKEY, 475
             // send_error(fd, 475);
