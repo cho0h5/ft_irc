@@ -5,7 +5,7 @@ std::string Error::err_unknowncommand(const std::string &nickname, const std::st
 }
 
 std::string Error::err_nosuchnick(const std::string &nickname, const std::string &wrong_recipient) {
-    return "401 " + nickname + " " + wrong_recipient + " :No such nick/channel";"
+    return "401 " + nickname + " " + wrong_recipient + " :No such nick/channel";
 }
 
 std::string Error::err_norecipient(const std::string &nickname, const std::string &command) {
