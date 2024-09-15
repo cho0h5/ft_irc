@@ -7,6 +7,7 @@
 #include <sstream>
 #include "Server.hpp"
 #include "Client.hpp"
+#include "Error.hpp"
 
 Server::Server(char* port, std::string password) : server_password(password) {
 	if (std::strlen(port) > 6 || std::atoi(port) < 1024) {
@@ -175,5 +176,9 @@ void Server::command_parsing(const int fd, const std::string &command) {
 		command_kick(fd, tokens);
 	} else if (exec_cmd == "INVITE") {
 		command_invite(fd, tokens);
+	} else {
+	    std::string nickname = clients_fd[fd].get_nickname();
+	    if (nickname.empty()) nickname = "*";
+	    clients_fd[fd].send_message(get_servername(), Error::err_unknowncommand(nickname, tokens[0]));
 	}
 }
