@@ -53,7 +53,7 @@ private:
 	void command_join(const int fd, std::vector<std::string> &cmds);
 	void command_topic(const int fd, const std::vector<std::string> &cmds);
 	void command_invite(const int fd, const std::vector<std::string> &cmds);
-	void command_kick(const int fd, const std::vector<std::string> &cmds);
+	void command_kick(const int fd, std::vector<std::string> &cmds);
 
 	// siychoi
 	void command_mode(const int fd, const std::vector<std::string> &cmds);

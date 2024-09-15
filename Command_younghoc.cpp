@@ -271,12 +271,78 @@ void Server::command_invite(const int fd, const std::vector<std::string> &cmds) 
 
 }
 
-void Server::command_kick(const int fd, const std::vector<std::string> &cmds) {
+void Server::command_kick(const int fd, std::vector<std::string> &cmds) {
     if (!clients_fd[fd].get_is_registered()) {
         clients_fd[fd].send_message(get_servername(), Error::err_notregistered());
         return;
     }
+    
+    if (cmds.size() < 3) {
+        // not enough parameters : ERR_NEEDMOREPARAMS, 461
+        // send_error(fd, 461);
+        return;
+    }
 
-    (void)fd;
-    (void)cmds;
+    if (cmds[0] != "KICK" || 4 < cmds.size()) {
+        // not KICK command
+        return;
+    }
+
+    std::map<std::string, Channel>::iterator iter = channels.find(cmds[1]);
+    if (iter == channels.end()) {
+        // no such channel : ERR_NOSUCHCHANNEL, 403
+        // send_error(fd, 403);
+        return;
+    }
+
+    Channel& channel = iter->second;
+    if (channel.get_client(clients_fd[fd].get_nickname()) == NULL) {
+        // not in channel : ERR_NOTONCHANNEL, 442
+        // send_error(fd, 442);
+        return;
+    }
+
+    if (channel.get_operator(clients_fd[fd].get_nickname()) == NULL) {
+        // not channel operator : ERR_CHANOPRIVSNEEDED, 482
+        // send_error(fd, 482);
+        return;
+    }
+    
+    std::vector<std::string> kicked_nicknames;
+    if (cmds[1].find(',') == std::string::npos) {
+        kicked_nicknames.push_back(cmds[1]);
+    }
+    else {
+        while (cmds[1].find(',') != std::string::npos) {
+            const size_t pos = cmds[1].find(',');
+            kicked_nicknames.push_back(cmds[1].substr(0, pos));
+            cmds[1].erase(0, pos + 1);
+        }
+    }
+    std::string reason = "";
+    if (cmds.size() == 4)
+        reason = " :" + cmds[4];
+
+    for (size_t i = 0; i < kicked_nicknames.size(); i++) {
+        std::map<std::string, Client*>::iterator kicked_client = clients_nickname.find(kicked_nicknames[i]);
+        if (kicked_client == clients_nickname.end()) {
+            // no such nick : ERR_NOSUCHNICK, 401
+            // send_error(fd, 401);
+            continue;
+        }
+
+        if (channel.get_client(kicked_client->first) == NULL) {
+            // not in channel : ERR_USERNOTINCHANNEL, 441
+            // send_error(fd, 441); -> 채널에 없는 클라이언트에게만 보냄
+            continue;
+        }
+
+        // kick success
+        kicked_client->second->send_message(get_servername(), "KICK " + channel.get_name() + " " + kicked_client->first + reason);
+        
+        if (channel.get_operator(kicked_client->first) != NULL)
+            channel.remove_operator(kicked_client->second);
+        channel.remove_client(kicked_client->second);
+        channel.set_current_users_count(channel.get_current_users_count() - 1);
+    }
 }
