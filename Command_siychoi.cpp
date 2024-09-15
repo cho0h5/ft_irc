@@ -20,6 +20,20 @@
 //6. parameter가 없는지 확인(461)
 //	6-1. o option에 nick이 존재하는지 확인(401)
 
+int get_user_limit(const std::string &str) {
+	int limit = 0;
+	for (size_t i = 0; i < str.size(); i++) {
+		if ('0' <= str[i] && str[i] <= '9') {
+			limit = limit * 10 + (str[i] - '0');
+			if (limit > 500)
+				limit = 500;
+		}
+		else
+			return -1;
+	}
+	return limit;
+}
+
 void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
     if (!clients_fd[fd].get_is_registered()) {
         clients_fd[fd].send_message(get_servername(), Error::err_notregistered());
@@ -54,7 +68,7 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 
 	Channel& channel = iter->second;
 
-	// TODO: add channel params
+	// show channel mode info
 	if (cmds.size() == 2) {
 		clients_fd[fd].send_message(get_servername(), "324 " + clients_fd[fd].get_nickname() + " " + channel.get_name() + " " + channel.get_channel_mode() + " " + channel.get_channel_params());
 		return ;
@@ -97,7 +111,13 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 					continue;
 				}
 				channel.add_channel_mode("l");
-				channel.set_channel_users_limit(std::stoi(cmds[args_idx++]));
+				// invalid limit : ERR_NEEDMOREPARAMS, 461
+				int limit = get_user_limit(cmds[args_idx++]);
+				if (limit == -1) {
+					clients_fd[fd].send_message(get_servername(), Error::err_needmoreparams("MODE"));
+					continue;
+				}
+				channel.set_channel_users_limit(limit);
 			}
 			
 			// add operator, TODO : 여러 명 한 번에 지원할 수 있는 서버도 있다던데 우린 한 명씩만 하는 거로 할까..?
@@ -121,13 +141,12 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 				if (channel.get_operator(cmds[args_idx++]) != NULL) {
 					continue;
 				}
-				// channel.add_channel_mode("o");
 				channel.add_operator(clients_nickname[cmds[args_idx++]]);
 			}
+			// unknown mode char : ERR_UNKNOWNMODE, 472
 			else {
-				// invalid mode or not alphebet
-				// TODO : 뭔 에러?
-				return ;
+				clients_fd[fd].send_message(get_servername(), Error::err_unknownmode(clients_fd[fd].get_nickname(), std::string(1, cmds[2][i])));
+				continue;
 			}
 		}
 	}
@@ -156,7 +175,7 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 			// remove limit
 			else if (cmds[2][i] == 'l') {
 				channel.remove_channel_mode("l");
-				channel.set_channel_users_limit(0);
+				channel.set_channel_users_limit(500);
 			}
 			// remove operator -> 서버에 따라 operator 옵션을 안 보여줘도 됨, 우린 이렇게 간다
 			else if (cmds[2][i] == 'o') {
@@ -181,16 +200,17 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 					continue;
 				}
 			}
+			// unknown mode char : ERR_UNKNOWNMODE, 472
 			else {
-				// invalid mode or not alphebet
-				// TODO : 뭔 에러?
-				return ;
+				clients_fd[fd].send_message(get_servername(), Error::err_unknownmode(clients_fd[fd].get_nickname(), std::string(1, cmds[2][i])));
+				continue;
 			}
 		}
 	}
-	// +, -가 아닌 다른 문자가 올 경우, 어케 처리하지
+	// +, -가 아닌 다른 문자가 올 경우
+	// unknown mode char : ERR_UNKNOWNMODE, 472
 	else {
-		// invalid mode
-		return ;
+		clients_fd[fd].send_message(get_servername(), Error::err_unknownmode(clients_fd[fd].get_nickname(), cmds[2]));
+		return;
 	}
 }

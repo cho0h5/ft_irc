@@ -67,6 +67,11 @@ class Error {
     // :server_name 471 <nickname> <channel_name> :Cannot join channel (+l) - channel is full
     static std::string err_channelisfull(const std::string &nickname, const std::string &channel_name); // 471
 
+    // <client> <modechar> :is unknown mode char to me
+    // :server 472 <user> l :is unknown mode char to me
+    static std::string err_unknownmode(const std::string &nickname, const std::string &modechar); // 472
+
+
     // <client> <channel> :Cannot join channel (+i)
     // :server_name 473 <nickname> <channel_name> :Cannot join channel (+i) - invite only
     static std::string err_inviteonlychan(const std::string &nickname, const std::string &channel_name); // 473

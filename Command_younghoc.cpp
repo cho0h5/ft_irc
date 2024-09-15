@@ -170,7 +170,6 @@ void Server::command_topic(const int fd, const std::vector<std::string> &cmds) {
     // not enough parameters : ERR_NEEDMOREPARAMS, 461
     if (cmds.size() < 2) {
         clients_fd[fd].send_message(get_servername(), Error::err_needmoreparams(cmds[0]));
-
         return;
     }
 

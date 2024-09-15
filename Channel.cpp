@@ -3,14 +3,14 @@
 Channel::Channel() : channel_mode("+") {
     is_invite_only = false;
     is_topic_restrict = true;
-    channel_users_limit = 0;
+    channel_users_limit = 500;
     current_users_count = 1;
 }
 Channel::Channel(std::string name) : channel_mode("+") {
     channel_name = name;
     is_invite_only = false;
     is_topic_restrict = true;
-    channel_users_limit = 0;
+    channel_users_limit = 500;
     current_users_count = 1;
 }
 

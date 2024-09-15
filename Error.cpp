@@ -65,6 +65,10 @@ std::string Error::err_channelisfull(const std::string &nickname, const std::str
     return "471 " + nickname + " " + channel_name + " :Cannot join channel (+l) - channel is full";
 }
 
+std::string Error::err_unknownmode(const std::string &nickname, const std::string &modechar) {
+    return "472 " + nickname + " " + modechar + " :is unknown mode char to me";
+}
+
 std::string Error::err_inviteonlychan(const std::string &nickname, const std::string &channel_name) {
     return "473 " + nickname + " " + channel_name + " :Cannot join channel (+i) - invite only";
 }
