@@ -26,8 +26,8 @@ class Channel {
         void    unset_option_o(Client* client);
         void    unset_option_l();
 
-        std::map<std::string, Client*>& get_clients();
-        std::map<std::string, Client*>& get_operators();
+        Client* get_clients(std::string client_nickname);
+        Client* get_operators(std::string operator_nickname);
 
         std::string get_name();
         std::string get_topic();
@@ -41,6 +41,8 @@ class Channel {
         void set_current_users_count(unsigned int count);
         void add_client(Client* client);
         void remove_client(Client* client);
+        void add_operator(Client* client);
+        void remove_operator(Client* client);
 
     private:
         std::map<std::string, Client*> clients;
