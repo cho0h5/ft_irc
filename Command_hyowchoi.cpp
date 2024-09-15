@@ -142,6 +142,10 @@ void Server::command_privmsg(const int fd, const std::vector<std::string> &cmds)
             }
 
             // 이 유저가 채널에 속해있지 않으면 ERR_CANNOTSENDTOCHAN
+            if (iu->second.get_client(nickname) == NULL) {
+                clients_fd[fd].send_message(get_servername(), Error::err_cannotsendtochan());
+                return;
+            }
 
             // 채널에 send
         }

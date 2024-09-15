@@ -23,11 +23,12 @@ std::map<std::string, Client*> Channel::get_operators() {
 }
 
 
-Client* Channel::get_client(std::string client_nickname) {
-    if (clients.find(client_nickname) == clients.end()) {
+Client* Channel::get_client(std::string client_nickname) const {
+    std::map<std::string, Client*>::const_iterator it = clients.find(client_nickname);
+    if (it == clients.end()) {
         return NULL;
     }
-    return clients[client_nickname];
+    return it->second;
 }
 
 Client* Channel::get_operator(std::string operator_nickname) {
