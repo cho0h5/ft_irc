@@ -50,7 +50,7 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
             Channel channel = iter->second;
 
             // 해당 클라이언트가 채널에 속해있는지 확인
-            if (channel.get_clients(clients_fd[fd].get_nickname()) == NULL)
+            if (channel.get_client(clients_fd[fd].get_nickname()) == NULL)
                 continue;
 
             channel.remove_client(&clients_fd[fd]);
@@ -88,13 +88,24 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
             return;
         }
 
+        // find channel names in server
         std::map<std::string, Channel>::iterator iter = channels.find(input_channels[i]);
 
-        // find channel names in server
+        // if there is no channel, create new channel
         if (iter == channels.end()) {
             std::string channel_name = input_channels[i];
             channels[channel_name] = Channel(channel_name);
-            return;
+
+            if (keys[i] != "")
+                channels[channel_name].set_channel_key(keys[i]);
+
+            channels[channel_name].add_client(&clients_fd[fd]);
+            channels[channel_name].add_operator(&clients_fd[fd]);
+            clients_fd[fd].send_message(clients_fd[fd].get_identifier(), "JOIN " + channel_name);
+            clients_fd[fd].send_message(get_servername(), "MODE " + channel_name + " +Cnst");
+            clients_fd[fd].send_message(get_servername(), "353 " + clients_fd[fd].get_nickname() + " @ " + channel_name + " :@" + clients_fd[fd].get_nickname());
+            clients_fd[fd].send_message(get_servername(), "366 " + clients_fd[fd].get_nickname() + " " + channel_name + " :End of /NAMES list");
+            continue;
         }
 
         Channel channel = iter->second;
@@ -118,8 +129,22 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
 
         channel.add_client(&clients_fd[fd]);
         channel.set_current_users_count(channel.get_current_users_count() + 1);
-    }
 
+        clients_fd[fd].send_message(clients_fd[fd].get_identifier(), "JOIN " + channel.get_name());
+            clients_fd[fd].send_message(get_servername(), "MODE " + channel.get_name() + " +Cnst");
+            std::map<std::string, Client*> joined_users = channel.get_clients();
+            std::map<std::string, Client*> joined_operators = channel.get_operators();
+            std::string joined_users_str = "";
+            for (std::map<std::string, Client*>::iterator iter = joined_users.begin(); iter != joined_users.end(); iter++) {
+                if (joined_operators.find(iter->first) != joined_operators.end())
+                    joined_users_str += "@";
+                else
+                joined_users_str += iter->first + " ";
+            }
+            clients_fd[fd].send_message(get_servername(), "353 " + clients_fd[fd].get_nickname() + " @ " + channel.get_name() + " :" + joined_users_str);
+            clients_fd[fd].send_message(get_servername(), "366 " + clients_fd[fd].get_nickname() + " " + channel.get_name() + " :End of /NAMES list");
+
+    }
 }
 
 
