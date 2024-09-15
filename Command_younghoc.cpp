@@ -28,7 +28,8 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
 
     // not enough parameters : ERR_NEEDMOREPARAMS, 461
     if (cmds.size() < 2) {
-        // send_error(fd, 461);
+        clients_fd[fd].send_message(get_servername(), Error::err_needmoreparams(cmds[0]));
+        return;
     }
 
     // too many parameters : 뭔 에러코드지?
@@ -90,9 +91,9 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
     // join channels
     for (size_t i = 0; i < input_channels.size(); i++) {
 
+        // incorrect channel name : ERR_BADCHANMASK, 476
         if (!check_channel_name(input_channels[i])) {
-            // incorrect channel name : ERR_BADCHANMASK, 476
-            // send_error(fd, 476);
+            clients_fd[fd].send_message(get_servername(), Error::err_badchanmask(clients_fd[fd].get_nickname(), input_channels[i]));
             return;
         }
 
@@ -119,21 +120,21 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
         }
     
         Channel& channel = iter->second;
+        // incorrect key : ERR_BADCHANNELKEY, 475
         if (keys[i] != channel.get_key()) {
-            // incorrect key : ERR_BADCHANNELKEY, 475
-            // send_error(fd, 475);
+            clients_fd[fd].send_message(get_servername(), Error::err_badchannelkey(clients_fd[fd].get_nickname(), channel.get_name())); 
             continue;
         }
 
+        // channel is full : ERR_CHANNELISFULL, 471
         if (channel.get_current_users_count() == channel.get_users_limit()) {
-            // channel is full : ERR_CHANNELISFULL, 471
-            // send_error(fd, 471);
+            clients_fd[fd].send_message(get_servername(), Error::err_channelisfull(clients_fd[fd].get_nickname(), channel.get_name())); 
             continue;
         }
 
+        // invite only : ERR_INVITEONLYCHAN, 473
         if (channel.get_option_invite_only() && channel.get_invited_client(clients_fd[fd].get_nickname()) == NULL) {
-            // invite only : ERR_INVITEONLYCHAN, 473
-            // send_error(fd, 473);
+            clients_fd[fd].send_message(get_servername(), Error::err_inviteonlychan(clients_fd[fd].get_nickname(), channel.get_name())); 
             continue;
         }
 
@@ -164,26 +165,29 @@ void Server::command_topic(const int fd, const std::vector<std::string> &cmds) {
         clients_fd[fd].send_message(get_servername(), Error::err_notregistered());
         return;
     }
+
+    // not enough parameters : ERR_NEEDMOREPARAMS, 461
     if (cmds.size() < 2) {
-        // not enough parameters : ERR_NEEDMOREPARAMS, 461
-        // send_error(fd, 461);
+        clients_fd[fd].send_message(get_servername(), Error::err_needmoreparams(cmds[0]));
+
         return;
     }
 
+    // not TOPIC command
     if (cmds[0] != "TOPIC" || 3 < cmds.size()) {
-        // not TOPIC command
         return;
     }
 
     std::map<std::string, Channel>::iterator iter = channels.find(cmds[1]);
+    // no such channel : ERR_NOSUCHCHANNEL, 403
     if (iter == channels.end()) {
-        // no such channel : ERR_NOSUCHCHANNEL, 403
-        // send_error(fd, 403);
+        clients_fd[fd].send_message(get_servername(), Error::err_nosuchchannel(clients_fd[fd].get_nickname(), cmds[1]));
         return;
     }
+
+    // not in channel : ERR_NOTONCHANNEL, 442
     if (iter->second.get_client(clients_fd[fd].get_nickname()) == NULL) {
-        // not in channel : ERR_NOTONCHANNEL, 442
-        // send_error(fd, 442);
+        clients_fd[fd].send_message(get_servername(), Error::err_notonchannel(clients_fd[fd].get_nickname(), cmds[1]));
         return;
     }
 
@@ -203,7 +207,7 @@ void Server::command_topic(const int fd, const std::vector<std::string> &cmds) {
     // set topic
     if (iter->second.get_option_topic_restrict() && iter->second.get_operator(clients_fd[fd].get_nickname()) == NULL) {
         // not channel operator : ERR_CHANOPRIVSNEEDED, 482
-        // send_error(fd, 482);
+        clients_fd[fd].send_message(get_servername(), Error::err_chanoprivsneeded(clients_fd[fd].get_nickname(), cmds[1]));
         return;
     }
     iter->second.set_channel_topic(cmds[2]);
@@ -220,9 +224,9 @@ void Server::command_invite(const int fd, const std::vector<std::string> &cmds) 
         clients_fd[fd].send_message(get_servername(), Error::err_notregistered());
         return;
     }
+    // not enough parameters : ERR_NEEDMOREPARAMS, 461
     if (cmds.size() < 3) {
-        // not enough parameters : ERR_NEEDMOREPARAMS, 461
-        // send_error(fd, 461);
+        clients_fd[fd].send_message(get_servername(), Error::err_needmoreparams(cmds[0]));
         return;
     }
 
@@ -233,34 +237,34 @@ void Server::command_invite(const int fd, const std::vector<std::string> &cmds) 
 
     std::map<std::string, Channel>::iterator iter = channels.find(cmds[2]);
     Channel& channel = iter->second;
+    // no such channel : ERR_NOSUCHCHANNEL, 403
     if (iter == channels.end()) {
-        // no such channel : ERR_NOSUCHCHANNEL, 403
-        // send_error(fd, 403);
+        clients_fd[fd].send_message(get_servername(), Error::err_nosuchchannel(clients_fd[fd].get_nickname(), cmds[2]));
         return;
     }
 
+    // not in channel : ERR_NOTONCHANNEL, 442
     if (channel.get_client(clients_fd[fd].get_nickname()) == NULL) {
-        // not in channel : ERR_NOTONCHANNEL, 442
-        // send_error(fd, 442);
+        clients_fd[fd].send_message(get_servername(), Error::err_notonchannel(clients_fd[fd].get_nickname(), cmds[2]));
         return;
     }
 
+    // not channel operator : ERR_CHANOPRIVSNEEDED, 482
     if (channel.get_operator(clients_fd[fd].get_nickname()) == NULL) {
-        // not channel operator : ERR_CHANOPRIVSNEEDED, 482
-        // send_error(fd, 482);
+        clients_fd[fd].send_message(get_servername(), Error::err_chanoprivsneeded(clients_fd[fd].get_nickname(), cmds[2]));
         return;
     }
 
     std::map<std::string, Client*>::iterator invitee = clients_nickname.find(cmds[1]);
+    // no such nick : ERR_NOSUCHNICK, 401
     if (invitee == clients_nickname.end()) {
-        // no such nick : ERR_NOSUCHNICK, 401
-        // send_error(fd, 401);
+        clients_fd[fd].send_message(get_servername(), Error::err_nosuchnick(clients_fd[fd].get_nickname(), cmds[1]));
         return;
     }
 
+    // already in channel : ERR_USERONCHANNEL, 443
     if (channel.get_client(invitee->first) != NULL) {
-        // already in channel : ERR_USERONCHANNEL, 443
-        // send_error(fd, 443);
+        clients_fd[fd].send_message(get_servername(), Error::err_useronchannel(clients_fd[fd].get_nickname(), invitee->first, cmds[2]));
         return;
     }
 
@@ -277,9 +281,9 @@ void Server::command_kick(const int fd, std::vector<std::string> &cmds) {
         return;
     }
     
+    // not enough parameters : ERR_NEEDMOREPARAMS, 461
     if (cmds.size() < 3) {
-        // not enough parameters : ERR_NEEDMOREPARAMS, 461
-        // send_error(fd, 461);
+        clients_fd[fd].send_message(get_servername(), Error::err_needmoreparams(cmds[0]));
         return;
     }
 
@@ -289,22 +293,22 @@ void Server::command_kick(const int fd, std::vector<std::string> &cmds) {
     }
 
     std::map<std::string, Channel>::iterator iter = channels.find(cmds[1]);
+    // no such channel : ERR_NOSUCHCHANNEL, 403
     if (iter == channels.end()) {
-        // no such channel : ERR_NOSUCHCHANNEL, 403
-        // send_error(fd, 403);
+        clients_fd[fd].send_message(get_servername(), Error::err_nosuchchannel(clients_fd[fd].get_nickname(), cmds[1]));
         return;
     }
 
     Channel& channel = iter->second;
+    // not in channel : ERR_NOTONCHANNEL, 442
     if (channel.get_client(clients_fd[fd].get_nickname()) == NULL) {
-        // not in channel : ERR_NOTONCHANNEL, 442
-        // send_error(fd, 442);
+        clients_fd[fd].send_message(get_servername(), Error::err_notonchannel(clients_fd[fd].get_nickname(), cmds[1]));
         return;
     }
 
+    // not channel operator : ERR_CHANOPRIVSNEEDED, 482
     if (channel.get_operator(clients_fd[fd].get_nickname()) == NULL) {
-        // not channel operator : ERR_CHANOPRIVSNEEDED, 482
-        // send_error(fd, 482);
+        clients_fd[fd].send_message(get_servername(), Error::err_chanoprivsneeded(clients_fd[fd].get_nickname(), cmds[1]));
         return;
     }
     
@@ -325,15 +329,16 @@ void Server::command_kick(const int fd, std::vector<std::string> &cmds) {
 
     for (size_t i = 0; i < kicked_nicknames.size(); i++) {
         std::map<std::string, Client*>::iterator kicked_client = clients_nickname.find(kicked_nicknames[i]);
+        // no such nick : ERR_NOSUCHNICK, 401
         if (kicked_client == clients_nickname.end()) {
-            // no such nick : ERR_NOSUCHNICK, 401
-            // send_error(fd, 401);
+            clients_fd[fd].send_message(get_servername(), Error::err_nosuchnick(clients_fd[fd].get_nickname(), kicked_nicknames[i]));
             continue;
         }
 
+        // not in channel : ERR_USERNOTINCHANNEL, 441
         if (channel.get_client(kicked_client->first) == NULL) {
-            // not in channel : ERR_USERNOTINCHANNEL, 441
-            // send_error(fd, 441); -> 채널에 없는 클라이언트에게만 보냄
+            // 채널에 없는 클라이언트에게만 보냄
+            clients_nickname[kicked_client->first]->send_message(get_servername(), Error::err_usernotinchannel(clients_fd[fd].get_nickname(), kicked_client->first, channel.get_name()));
             continue;
         }
 
