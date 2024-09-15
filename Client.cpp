@@ -2,10 +2,10 @@
 #include "Client.hpp"
 #include <unistd.h>
 
-Client::Client() {
+Client::Client() : is_registered(false) {
 }
 
-Client::Client(const int fd, const std::string &ip) : fd(fd), hostname(ip) {
+Client::Client(const int fd, const std::string &ip) : fd(fd), hostname(ip), is_registered(false) {
 }
 
 int Client::get_fd() const {
@@ -32,6 +32,10 @@ std::string Client::get_identifier() const {
     return get_nickname() + "!~" + get_username() + "@" + get_hostname();
 }
 
+bool Client::get_is_registered() const {
+    return is_registered;
+}
+
 void Client::set_nickname(const std::string &nickname) {
     this->nickname = nickname;
 }
@@ -46,6 +50,10 @@ void Client::set_realname(const std::string &realname) {
 
 void Client::set_hostname(const std::string &hostname) {
     this->hostname = hostname;
+}
+
+void Client::set_is_registered() {
+    is_registered = true;
 }
 
 int Client::read_handler(Server *server) {
