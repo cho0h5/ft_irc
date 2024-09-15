@@ -43,7 +43,7 @@ void Server::command_nick(const int fd, const std::vector<std::string> &cmds) {
     clients_nickname[cmds[1]] = &clients_fd[fd];
 
     if (it->second.is_connect_possible()) {
-        welcome(fd);
+        register_client(fd);
     }
 }
 
@@ -77,7 +77,7 @@ void Server::command_user(const int fd, const std::vector<std::string> &cmds) {
     it->second.set_realname(cmds[4]);   // TODO: 이름 유효성 검사 해야함
 
     if (it->second.is_connect_possible()) {
-        welcome(fd);
+        register_client(fd);
     }
 }
 
