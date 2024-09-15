@@ -35,6 +35,7 @@ private:
 	unsigned int server_socket_fd;
 
 	std::string get_servername() const;
+	std::string get_identifier() const;
 
 	int create_kqueue();
     void set_kqueue_write_event();
