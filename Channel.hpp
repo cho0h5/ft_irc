@@ -9,6 +9,7 @@
 class Channel {
     public:
         Channel();
+        Channel(std::string name);
 
         void    kick(Client* client);
         void    invite(Client* client);
