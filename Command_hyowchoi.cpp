@@ -147,7 +147,7 @@ void Server::command_privmsg(const int fd, const std::vector<std::string> &cmds)
                 return;
             }
 
-            iu->second.send_message(client, message);
+            iu->second.send_message(client, "PRIVMSG " + channelname + " :" + message);
         }
     }
 }
