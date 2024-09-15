@@ -17,15 +17,17 @@ class Channel {
 
         void    set_option_i();
         void    set_option_t();
-        void    set_option_k(std::string key);
-        void    set_option_o(Client* client);
-        void    set_option_l(unsigned int users_limit);
+        // void    set_option_k(std::string key);
+        // void    set_option_o(Client* client);
+        // void    set_option_l(unsigned int users_limit);
 
         void    unset_option_i();
         void    unset_option_t();
-        void    unset_option_k(std::string key);
-        void    unset_option_o(Client* client);
-        void    unset_option_l();
+        // void    unset_option_k(std::string key);
+        // void    unset_option_o(Client* client);
+        // void    unset_option_l();
+
+        void set_channel_users_limit(unsigned int limit);
 
         std::map<std::string, Client*> get_clients();
         std::map<std::string, Client*> get_operators();
@@ -46,15 +48,24 @@ class Channel {
         void set_channel_key(std::string key);
         void set_channel_topic(std::string topic);
 
+
         void set_current_users_count(unsigned int count);
         void add_client(Client* client);
         void remove_client(Client* client);
 
         void add_operator(Client* client);
         void remove_operator(Client* client);
+        std::string get_channel_mode();
 
         void add_invited_client(Client* client);
 
+        /*----------------------mode----------------------*/
+        void add_channel_mode(std::string mode);
+        void remove_channel_mode(std::string mode);
+
+        std::string get_channel_params();
+
+        /*----------------------message----------------------*/
         void send_message(const Client &client, const std::string &message) const;
 
     private:
@@ -71,6 +82,7 @@ class Channel {
         unsigned int channel_users_limit;
         unsigned int current_users_count;
 
+        std::string channel_mode;
 
 };
 

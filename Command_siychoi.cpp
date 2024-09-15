@@ -26,60 +26,171 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
         return;
     }
 
-	(void)fd;
-  	(void)cmds;
-	std::string	channel_name, user_name;	//username은 어떻게 정의하지? fd로 하는 건가
-	std::map<bool, std::string>	options;
-	// const std::set<char> valid_option_chars = "+-itrko";    // compile error
-	// unsigned int option_parameters = 0; // compile error
-
-	//1
+	// 1. not MODE command
     if (cmds[0] != "MODE") {
         return;
     }
 
-	//2
+	// 2. not enough parameters : ERR_NEEDMOREPARAMS, 461
 	if (cmds.size() < 2) {
-		// send_error(fd, 461);
+		clients_fd[fd].send_message(get_servername(), Error::err_needmoreparams("MODE"));
+		return;
+	}
+
+	// 3. find channel names in server
+	std::map<std::string, Channel>::iterator iter = channels.find(cmds[1]);
+
+	// no such channel : ERR_NOSUCHCHANNEL, 403
+	if (iter == channels.end()) {
+		clients_fd[fd].send_message(get_servername(), Error::err_nosuchchannel(clients_fd[fd].get_nickname(), cmds[1]));
 		return ;
 	}
 
-	//3
-	if (cmds[1].at(0) != '#') {
-		// send_error(fd, 403)
-		return ;
-	}
-	channel_name = cmds[1];
-	channel_name.erase(0, 1);
-	if (channels.find(channel_name) == channels.end()) {
-		// send_error(fd, 403)
-		return ;
-	}
+	// 5. not channel operator : ERR_CHANOPRIVSNEEDED, 482
+	if (iter->second.get_operator(clients_fd[fd].get_nickname()) == NULL) {
+        clients_fd[fd].send_message(get_servername(), Error::err_chanoprivsneeded(clients_fd[fd].get_nickname(), cmds[1]));
+        return;
+    }
 
+	Channel& channel = iter->second;
+
+	// TODO: add channel params
 	if (cmds.size() == 2) {
-		 // 채널정보 출력
+		clients_fd[fd].send_message(get_servername(), "324 " + clients_fd[fd].get_nickname() + " " + channel.get_name() + " " + channel.get_channel_mode() + " " + channel.get_channel_params());
 		return ;
 	}
 
-	//std::vector<Client*>& clients = channels.find(channel_name)->second.get_clients();
-	//std::vector<Client*>& operators = channels.find(channel_name)->second.get_operators();
+	unsigned int args_idx = 3, args_size = cmds.size();
+	// 4. add mode , itkol
+	if (cmds[2][0] == '+') {
+		for (size_t i = 1; i < cmds[2].size(); i++) {
 
-	//4
-	//여기 너무 복잡한데;;
-	for (unsigned long i = 0; i < cmds[2].size(); i++) {
-	   // const char c = cmds[2][i];   // compile error
-		// if (c == 'l' || c == 'k' || c == 'o') // compile error
-			// option_parameters++;  // compile error
-		// if (valid_option_chars.find(c) == std::string::npos) {
-			// send_error(fd, 472);
-			// return ;
-		// }
+			// add invite only
+			if (cmds[2][i] == 'i') {
+				if (channel.get_option_invite_only())
+					continue;
+				channel.add_channel_mode("i");
+				channel.set_option_i();
+			}
+			// add topic restrict
+			else if (cmds[2][i] == 't') {
+				if (channel.get_option_topic_restrict())
+					continue;
+				channel.add_channel_mode("t");
+				channel.set_option_t();
+			}
+			// add/change key
+			else if (cmds[2][i] == 'k') {
+				// not enough parameters : ERR_NEEDMOREPARAMS, 461
+				if (args_idx >= args_size) {
+					clients_fd[fd].send_message(get_servername(), Error::err_needmoreparams("MODE"));
+					continue;
+				}
+				channel.add_channel_mode("k");
+				channel.set_channel_key(cmds[args_idx++]);
+			}
+			// add limit
+			else if (cmds[2][i] == 'l') {
+				// not enough parameters : ERR_NEEDMOREPARAMS, 461
+				if (args_idx >= args_size) {
+					clients_fd[fd].send_message(get_servername(), Error::err_needmoreparams("MODE"));
+					continue;
+				}
+				channel.add_channel_mode("l");
+				channel.set_channel_users_limit(std::stoi(cmds[args_idx++]));
+			}
+			
+			// add operator, TODO : 여러 명 한 번에 지원할 수 있는 서버도 있다던데 우린 한 명씩만 하는 거로 할까..?
+			else if (cmds[2][i] == 'o') {
+				// not enough parameters : ERR_NEEDMOREPARAMS, 461
+				if (args_idx >= args_size) {
+					clients_fd[fd].send_message(get_servername(), Error::err_needmoreparams("MODE"));
+					continue;
+				}
+				// no such nick : ERR_NOSUCHNICK, 401
+				if (clients_nickname.find(cmds[args_idx]) == clients_nickname.end()) {
+					clients_fd[fd].send_message(get_servername(), Error::err_nosuchnick(clients_fd[fd].get_nickname(), cmds[args_idx++]));
+					continue;
+				}
+        		// not in channel : ERR_USERNOTINCHANNEL, 441
+				if (channel.get_client(cmds[args_idx]) == NULL) {
+					clients_fd[fd].send_message(get_servername(), Error::err_usernotinchannel(clients_fd[fd].get_nickname(), cmds[args_idx++], channel.get_name()));
+					continue;
+				}
+				// already operator
+				if (channel.get_operator(cmds[args_idx++]) != NULL) {
+					continue;
+				}
+				// channel.add_channel_mode("o");
+				channel.add_operator(clients_nickname[cmds[args_idx++]]);
+			}
+			else {
+				// invalid mode or not alphebet
+				// TODO : 뭔 에러?
+				return ;
+			}
+		}
 	}
-
-	//5
-	//if (find(operators.begin(), operators.end(), user_name) == operators.end()) {
-	//	//send_error(fd, 482)
-	//	return ;
-	//}
-
+	// 4. remove mode, itkol
+	else if (cmds[2][0] == '-') {
+		for (size_t i = 1; i < cmds[2].size(); i++) {
+			// remove invite only
+			if (cmds[2][i] == 'i') {
+				if (!channel.get_option_invite_only())
+					continue;
+				channel.unset_option_i();
+				channel.remove_channel_mode("i");
+			}
+			// remove topic restrict
+			else if (cmds[2][i] == 't') {
+				if (!channel.get_option_topic_restrict())
+					continue;
+				channel.unset_option_t();
+				channel.remove_channel_mode("t");
+			}
+			// remove key
+			else if (cmds[2][i] == 'k') {
+				channel.remove_channel_mode("k");
+				channel.set_channel_key("");
+			}
+			// remove limit
+			else if (cmds[2][i] == 'l') {
+				channel.remove_channel_mode("l");
+				channel.set_channel_users_limit(0);
+			}
+			// remove operator -> 서버에 따라 operator 옵션을 안 보여줘도 됨, 우린 이렇게 간다
+			else if (cmds[2][i] == 'o') {
+				// not enough parameters : ERR_NEEDMOREPARAMS, 461
+				if (args_idx >= args_size) {
+					clients_fd[fd].send_message(get_servername(), Error::err_needmoreparams("MODE"));
+					continue;
+				}
+				// no such nick : ERR_NOSUCHNICK, 401
+				if (clients_nickname.find(cmds[args_idx]) == clients_nickname.end()) {
+					clients_fd[fd].send_message(get_servername(), Error::err_nosuchnick(clients_fd[fd].get_nickname(), cmds[args_idx++]));
+					continue;
+				}
+        		// not in channel : ERR_USERNOTINCHANNEL, 441
+				if (channel.get_client(cmds[args_idx]) == NULL) {
+					clients_fd[fd].send_message(get_servername(), Error::err_usernotinchannel(clients_fd[fd].get_nickname(), cmds[args_idx++], channel.get_name()));
+					continue;
+				}
+				// not channel operator : ERR_CHANOPRIVSNEEDED, 482
+				if (channel.get_operator(cmds[args_idx]) == NULL) {
+					clients_fd[fd].send_message(get_servername(), Error::err_chanoprivsneeded(clients_fd[fd].get_nickname(), cmds[args_idx++]));
+					continue;
+				}
+			}
+			else {
+				// invalid mode or not alphebet
+				// TODO : 뭔 에러?
+				return ;
+			}
+		}
+	}
+	// +, -가 아닌 다른 문자가 올 경우, 어케 처리하지
+	else {
+		// invalid mode
+		return ;
+	}
 }

@@ -116,6 +116,7 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
             clients_fd[fd].send_message(get_servername(), "MODE " + channel_name + " +Cnst");
             clients_fd[fd].send_message(get_servername(), "353 " + clients_fd[fd].get_nickname() + " @ " + channel_name + " :@" + clients_fd[fd].get_nickname());
             clients_fd[fd].send_message(get_servername(), "366 " + clients_fd[fd].get_nickname() + " " + channel_name + " :End of /NAMES list");
+            channels[channel_name].add_channel_mode("Cnst");
             continue;
         }
     

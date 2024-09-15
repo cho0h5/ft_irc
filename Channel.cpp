@@ -1,12 +1,12 @@
 #include "Channel.hpp"
 
-Channel::Channel() {
+Channel::Channel() : channel_mode("+") {
     is_invite_only = false;
     is_topic_restrict = true;
     channel_users_limit = 0;
     current_users_count = 1;
 }
-Channel::Channel(std::string name) {
+Channel::Channel(std::string name) : channel_mode("+") {
     channel_name = name;
     is_invite_only = false;
     is_topic_restrict = true;
@@ -125,4 +125,54 @@ void Channel::send_message(const Client &client, const std::string &message) con
 
         it->second->send_message(sender_identifier, message);
     }
+}
+
+
+void Channel::add_channel_mode(std::string mode) {
+    for (size_t idx = 0; idx < mode.size(); idx++) {
+        if (channel_mode.find(mode[idx]) == std::string::npos)
+            channel_mode += mode[idx];
+    }
+}
+
+void Channel::remove_channel_mode(std::string mode) {
+    for (size_t idx = 0; idx < mode.size(); idx++) {
+        if (channel_mode.find(mode[idx]) != std::string::npos)
+            channel_mode.erase(channel_mode.find(mode[idx]), 1);
+    }
+}
+
+std::string Channel::get_channel_mode() {
+    return channel_mode;
+}
+
+void Channel::set_option_i() {
+    is_invite_only = true;
+}
+
+void Channel::unset_option_i() {
+    is_invite_only = false;
+}
+
+void Channel::set_option_t() {
+    is_topic_restrict = true;
+}
+
+void Channel::unset_option_t() {
+    is_topic_restrict = false;
+}
+
+void Channel::set_channel_users_limit(unsigned int limit) {
+    channel_users_limit = limit;
+}
+
+std::string Channel::get_channel_params() {
+    std::string params = "";
+    for (size_t idx = 0; idx < channel_mode.size(); idx++) {
+        if (channel_mode[idx] == 'k')
+            params += channel_key + " ";
+        else if (channel_mode[idx] == 'l')
+            params += "l" + std::to_string(channel_users_limit);
+    }
+    return params;
 }
