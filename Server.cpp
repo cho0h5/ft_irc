@@ -62,7 +62,7 @@ int Server::run() {
 				const int ret = clients_fd[event.ident].read_handler(this);
 
 				if (ret) {
-				    // TODO: remove this client
+				    remove_client(event.ident);
 				}
 			} else if (event.filter == EVFILT_WRITE) {
 			    clients_fd[event.ident].write_handler();
@@ -129,13 +129,22 @@ void Server::register_client(const int fd) {
     clients_fd[fd].set_is_registered();
 }
 
+void Server::remove_client(const int fd) {
+    for (std::map<std::string, Channel>::iterator it = channels.begin(); it != channels.end(); it++) {
+        it->second.remove_client(&clients_fd[fd]);
+    }
+    clients_nickname.erase(clients_fd[fd].get_nickname());
+    clients_fd.erase(fd);
+    close(fd);
+}
+
 void Server::command_parsing(const int fd, const std::string &command) {
     const std::string Commands[] = {"NICK", "USER", "PRIVMSG", "JOIN", "MODE", "TOPIC", "KICK", "INVITE" };
     std::stringstream ss(command);
     std::string exec_cmd, token;
     std::vector<std::string> tokens;
 
-	if (command.empty()) 
+	if (command.empty())
 		return;
 
     std::cout << command << '\n';

@@ -42,6 +42,7 @@ private:
 	void add_event(uintptr_t ident, int16_t filter, uint16_t flags);
 
 	void register_client(const int fd);
+	void remove_client(const int fd);
 
 	// hyowchoi
 	void command_nick(const int fd, const std::vector<std::string> &cmds);
