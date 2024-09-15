@@ -176,6 +176,4 @@ void Server::command_parsing(const int fd, const std::string &command) {
 	} else if (exec_cmd == "INVITE") {
 		command_invite(fd, tokens);
 	}
-
-
 }
