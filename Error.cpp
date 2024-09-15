@@ -28,6 +28,10 @@ std::string Error::err_nicknameinuse(const std::string &wrong_nickname) {
     return "433 * " + wrong_nickname + " :";
 }
 
+std::string Error::err_notregistered() {
+    return "451 * :You have not registered";
+}
+
 std::string Error::err_needmoreparams(const std::string &command) {
     return "461 * " + command + " :Not enough parameters";
 }

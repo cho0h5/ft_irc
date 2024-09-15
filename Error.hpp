@@ -29,6 +29,10 @@ class Error {
     // :tantalum.libera.chat 433 * asdf :Nickname is already in use.
     static std::string err_nicknameinuse(const std::string &wrong_nickname);     // 433
 
+    // <client> :You have not registered
+    // :tantalum.libera.chat 451 * :You have not registered
+    static std::string err_notregistered(); // 451
+
     // <client> <command> :Not enough parameters
     // :iridium.libera.chat 461 * USER :Not enough parameters
     static std::string err_needmoreparams(const std::string &command);    // 461
