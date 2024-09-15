@@ -38,11 +38,12 @@ class Channel {
         std::string get_key();
 
         bool         get_option_invite_only();
-        bool         get_option_topic();
+        bool         get_option_topic_restrict();
         unsigned int get_users_limit();
         unsigned int get_current_users_count();
 
         void set_channel_key(std::string key);
+        void set_channel_topic(std::string topic);
 
         void set_current_users_count(unsigned int count);
         void add_client(Client* client);

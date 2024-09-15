@@ -3,13 +3,11 @@
 #include "Client.hpp"
 
 bool check_channel_name(const std::string &channel_name) {
-    if (channel_name.size() < 2 || channel_name.size() > 50) {
+    if (channel_name.size() < 2 || channel_name.size() > 50)
         return false;
-    }
 
-    if (channel_name[0] != '#') {
+    if (channel_name[0] != '#')
         return false;
-    }
 
     for (size_t i = 1; i < channel_name.size(); i++) {
         if (!(('0' <= channel_name[i] && channel_name[i] <= '9')
@@ -42,7 +40,6 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
     if (cmds[0] != "JOIN") {
         return;
     }
-
 
     // 참여중인 모든 채널에서 나감
     if (cmds.size() == 2 && cmds[0] == "JOIN" && cmds[1] == "0") {
@@ -113,7 +110,6 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
                 channel.set_channel_key(keys[i]);
             }
 
-
             channels[channel_name].add_client(&clients_fd[fd]);
             channels[channel_name].add_operator(&clients_fd[fd]);
             clients_fd[fd].send_message(clients_fd[fd].get_identifier(), "JOIN " + channel_name);
@@ -122,7 +118,6 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
             clients_fd[fd].send_message(get_servername(), "366 " + clients_fd[fd].get_nickname() + " " + channel_name + " :End of /NAMES list");
             continue;
         }
-
     
         Channel& channel = iter->second;
         if (keys[i] != channel.get_key()) {
@@ -171,10 +166,49 @@ void Server::command_topic(const int fd, const std::vector<std::string> &cmds) {
         clients_fd[fd].send_message(get_servername(), Error::err_notregistered());
         return;
     }
-      (void)fd;
-    (void)cmds;
+    if (cmds.size() < 2) {
+        // not enough parameters : ERR_NEEDMOREPARAMS, 461
+        // send_error(fd, 461);
+        return;
+    }
 
+    if (cmds[0] != "TOPIC" || 3 < cmds.size()) {
+        // not TOPIC command
+        return;
+    }
 
+    std::map<std::string, Channel>::iterator iter = channels.find(cmds[1]);
+    if (iter == channels.end()) {
+        // no such channel : ERR_NOSUCHCHANNEL, 403
+        // send_error(fd, 403);
+        return;
+    }
+    if (iter->second.get_client(clients_fd[fd].get_nickname()) == NULL) {
+        // not in channel : ERR_NOTONCHANNEL, 442
+        // send_error(fd, 442);
+        return;
+    }
+
+    // get topic
+    if (cmds.size() == 2) {
+        if (iter->second.get_topic() == "") {
+            // no topic : RPL_NOTOPIC, 331
+            clients_fd[fd].send_message(get_servername(), "331 " + clients_fd[fd].get_nickname() + " " + iter->second.get_name() + " :No topic is set");
+            return;
+        }
+
+        Channel& channel = iter->second;
+        clients_fd[fd].send_message(get_servername(), "332 " + clients_fd[fd].get_nickname() + " " + channel.get_name() + " :" + channel.get_topic());
+        return;
+    }
+    
+    // set topic
+    if (iter->second.get_option_topic_restrict() && iter->second.get_operator(clients_fd[fd].get_nickname()) == NULL) {
+        // not channel operator : ERR_CHANOPRIVSNEEDED, 482
+        // send_error(fd, 482);
+        return;
+    }
+    iter->second.set_channel_topic(cmds[2]);
 }
 
 void Server::command_invite(const int fd, const std::vector<std::string> &cmds) {

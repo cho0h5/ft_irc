@@ -56,7 +56,7 @@ bool    Channel::get_option_invite_only() {
     return is_invite_only;
 }
 
-bool    Channel::get_option_topic() {
+bool    Channel::get_option_topic_restrict() {
     return is_topic_restrict;
 }
 
@@ -70,6 +70,10 @@ unsigned int Channel::get_current_users_count() {
 
 void Channel::set_channel_key(std::string key) {
     channel_key = key;
+}
+
+void Channel::set_channel_topic(std::string topic) {
+    channel_topic = topic;
 }
 
 void Channel::set_current_users_count(unsigned int count) {
