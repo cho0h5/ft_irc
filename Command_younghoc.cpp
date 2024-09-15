@@ -156,7 +156,6 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
         }
         clients_fd[fd].send_message(get_servername(), "353 " + clients_fd[fd].get_nickname() + " @ " + channel.get_name() + " :" + joined_users_str);
         clients_fd[fd].send_message(get_servername(), "366 " + clients_fd[fd].get_nickname() + " " + channel.get_name() + " :End of /NAMES list");
-
     }
 }
 
@@ -209,6 +208,12 @@ void Server::command_topic(const int fd, const std::vector<std::string> &cmds) {
         return;
     }
     iter->second.set_channel_topic(cmds[2]);
+
+    // send changed topic to all clients in the channel
+    Channel& channel = iter->second;
+    std::map<std::string, Client*> joined_users = iter->second.get_clients();
+    for (std::map<std::string, Client*>::iterator iter = joined_users.begin(); iter != joined_users.end(); iter++)
+        iter->second->send_message(clients_fd[fd].get_identifier(), "TOPIC " + channel.get_name() + " :" + channel.get_topic());
 }
 
 void Server::command_invite(const int fd, const std::vector<std::string> &cmds) {
