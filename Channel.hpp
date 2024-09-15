@@ -48,14 +48,18 @@ class Channel {
         void set_current_users_count(unsigned int count);
         void add_client(Client* client);
         void remove_client(Client* client);
+
         void add_operator(Client* client);
         void remove_operator(Client* client);
+
+        void add_invited_client(Client* client);
 
         void send_message(const Client &client, const std::string &message) const;
 
     private:
         std::map<std::string, Client*> clients;
         std::map<std::string, Client*> operators;
+        std::map<std::string, Client*> invited_clients;
 
         std::string channel_name;
         std::string channel_topic;

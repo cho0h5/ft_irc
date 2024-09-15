@@ -102,6 +102,12 @@ void Channel::remove_operator(Client* client) {
     operators.erase(client->get_nickname());
 }
 
+void Channel::add_invited_client(Client* client) {
+    if (client == NULL)
+        return;
+    invited_clients[client->get_nickname()] = client;
+}
+
 void Channel::send_message(const Client &client, const std::string &message) const {
     const std::string sender_identifier = client.get_identifier();
 

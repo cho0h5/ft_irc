@@ -87,7 +87,6 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
         }
     }
 
-
     // join channels
     for (size_t i = 0; i < input_channels.size(); i++) {
 
@@ -221,9 +220,55 @@ void Server::command_invite(const int fd, const std::vector<std::string> &cmds) 
         clients_fd[fd].send_message(get_servername(), Error::err_notregistered());
         return;
     }
+    if (cmds.size() < 3) {
+        // not enough parameters : ERR_NEEDMOREPARAMS, 461
+        // send_error(fd, 461);
+        return;
+    }
 
-    (void)fd;
-    (void)cmds;
+    if (cmds[0] != "INVITE" || 3 < cmds.size()) {
+        // not INVITE command
+        return;
+    }
+
+    std::map<std::string, Channel>::iterator iter = channels.find(cmds[2]);
+    Channel& channel = iter->second;
+    if (iter == channels.end()) {
+        // no such channel : ERR_NOSUCHCHANNEL, 403
+        // send_error(fd, 403);
+        return;
+    }
+
+    if (channel.get_client(clients_fd[fd].get_nickname()) == NULL) {
+        // not in channel : ERR_NOTONCHANNEL, 442
+        // send_error(fd, 442);
+        return;
+    }
+
+    if (channel.get_operator(clients_fd[fd].get_nickname()) == NULL) {
+        // not channel operator : ERR_CHANOPRIVSNEEDED, 482
+        // send_error(fd, 482);
+        return;
+    }
+
+    std::map<std::string, Client*>::iterator invitee = clients_nickname.find(cmds[1]);
+    if (invitee == clients_nickname.end()) {
+        // no such nick : ERR_NOSUCHNICK, 401
+        // send_error(fd, 401);
+        return;
+    }
+
+    if (channel.get_client(invitee->first) != NULL) {
+        // already in channel : ERR_USERONCHANNEL, 443
+        // send_error(fd, 443);
+        return;
+    }
+
+    // invite success
+    clients_fd[fd].send_message(get_servername(), "341 " + clients_fd[fd].get_nickname() + " " + invitee->second->get_nickname() + " " + channel.get_name());
+    invitee->second->send_message(clients_fd[fd].get_identifier(), "INVITE " + invitee->second->get_nickname() + " " + channel.get_name());
+    channel.add_invited_client(invitee->second);
+
 }
 
 void Server::command_kick(const int fd, const std::vector<std::string> &cmds) {
