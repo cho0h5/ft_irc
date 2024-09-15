@@ -2,14 +2,14 @@
 
 Channel::Channel() {
     is_invite_only = false;
-    // is_topic_restrict = false;
+    is_topic_restrict = true;
     channel_users_limit = 0;
     current_users_count = 1;
 }
 Channel::Channel(std::string name) {
     channel_name = name;
     is_invite_only = false;
-    // is_topic_restrict = false;
+    is_topic_restrict = true;
     channel_users_limit = 0;
     current_users_count = 1;
 }
