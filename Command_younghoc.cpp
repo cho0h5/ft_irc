@@ -87,8 +87,8 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
 
         // find channel names in server
         if (iter == channels.end()) {
-            // no such channel : ERR_NOSUCHCHANNEL, 403
-            // send_error(fd, 403);
+            std::string channel_name = input_channels[i];
+            channels[channel_name] = Channel(channel_name);
             return;
         }
 
