@@ -309,14 +309,14 @@ void Server::command_kick(const int fd, std::vector<std::string> &cmds) {
     }
     
     std::vector<std::string> kicked_nicknames;
-    if (cmds[1].find(',') == std::string::npos) {
-        kicked_nicknames.push_back(cmds[1]);
+    if (cmds[2].find(',') == std::string::npos) {
+        kicked_nicknames.push_back(cmds[2]);
     }
     else {
-        while (cmds[1].find(',') != std::string::npos) {
-            const size_t pos = cmds[1].find(',');
-            kicked_nicknames.push_back(cmds[1].substr(0, pos));
-            cmds[1].erase(0, pos + 1);
+        while (cmds[2].find(',') != std::string::npos) {
+            const size_t pos = cmds[2].find(',');
+            kicked_nicknames.push_back(cmds[2].substr(0, pos));
+            cmds[2].erase(0, pos + 1);
         }
     }
     std::string reason = "";
@@ -338,7 +338,9 @@ void Server::command_kick(const int fd, std::vector<std::string> &cmds) {
         }
 
         // kick success
-        kicked_client->second->send_message(get_servername(), "KICK " + channel.get_name() + " " + kicked_client->first + reason);
+        std::map<std::string, Client*> joined_users = channel.get_clients();
+        for (std::map<std::string, Client*>::iterator iter = joined_users.begin(); iter != joined_users.end(); iter++)
+            iter->second->send_message(get_servername(), "KICK " + channel.get_name() + " " + kicked_client->first + reason);
         
         if (channel.get_operator(kicked_client->first) != NULL)
             channel.remove_operator(kicked_client->second);
