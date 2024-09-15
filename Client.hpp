@@ -9,6 +9,7 @@ class Client {
     public:
         Client();
         Client(const int fd, const std::string &ip);
+        ~Client();
 
         int get_fd() const;
         std::string get_nickname() const;

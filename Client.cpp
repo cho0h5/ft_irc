@@ -8,6 +8,10 @@ Client::Client() : is_registered(false) {
 Client::Client(const int fd, const std::string &ip) : fd(fd), hostname(ip), is_registered(false) {
 }
 
+Client::~Client() {
+    close(get_fd());
+}
+
 int Client::get_fd() const {
     return fd;
 }
