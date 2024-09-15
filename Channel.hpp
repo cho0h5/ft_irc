@@ -30,7 +30,7 @@ class Channel {
         std::map<std::string, Client*> get_clients();
         std::map<std::string, Client*> get_operators();
 
-        Client* get_client(std::string client_nickname);
+        Client* get_client(std::string client_nickname) const;
         Client* get_operator(std::string operator_nickname);
 
         std::string get_name();

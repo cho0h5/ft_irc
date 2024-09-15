@@ -1,6 +1,12 @@
+#include "Channel.hpp"
 #include "Error.hpp"
 #include "Server.hpp"
 #include "Client.hpp"
+#include <set>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <xlocale/_stdio.h>
 
 // NICK <new_nickname>
 // TODO : client 객체 생성 시 nickname 임의로 지정
@@ -81,6 +87,17 @@ void Server::command_user(const int fd, const std::vector<std::string> &cmds) {
     }
 }
 
+static std::vector<std::string> split_recipients(const std::string &arg) {
+    std::vector<std::string> recipients;
+    std::stringstream ss(arg);
+    std::string recipient;
+
+    while (std::getline(ss, recipient, ',')) {
+        recipients.push_back(recipient);
+    }
+    return recipients;
+}
+
 void Server::command_privmsg(const int fd, const std::vector<std::string> &cmds) {
     if (!clients_fd[fd].get_is_registered()) {
         clients_fd[fd].send_message(get_servername(), Error::err_notregistered());
@@ -100,15 +117,37 @@ void Server::command_privmsg(const int fd, const std::vector<std::string> &cmds)
         return;
     }
 
-    const std::string recipient = cmds[1];
     const std::string message = cmds[2];
+    const std::vector<std::string> recipients = split_recipients(cmds[1]);
 
-    std::map<std::string, Client*>::iterator it = clients_nickname.find(recipient);
-    if (it == clients_nickname.end()) {
-        clients_fd[fd].send_message(get_servername(), Error::err_nosuchnick(nickname, recipient));
-        return;
+    for (std::vector<std::string>::const_iterator it = recipients.begin(); it != recipients.end(); it++) {
+        if (it->rfind("#", 0) != 0) {   // to one person
+            const std::string &recipient = *it;
+
+            std::map<std::string, Client*>::iterator iu = clients_nickname.find(recipient);
+            if (iu == clients_nickname.end()) {
+                clients_fd[fd].send_message(get_servername(), Error::err_nosuchnick(nickname, recipient));
+                return;
+            }
+
+            Client &client = clients_fd[fd];
+            iu->second->send_message(client.get_identifier(), "PRIVMSG " + nickname + " :" + message);
+        } else {    // to channel
+            const std::string &channelname = *it;
+
+            std::map<std::string, Channel>::const_iterator iu = channels.find(channelname);
+            if (iu == channels.end()) {
+                clients_fd[fd].send_message(get_servername(), Error::err_nosuchnick(nickname, channelname));
+                return;
+            }
+
+            // 이 유저가 채널에 속해있지 않으면 ERR_CANNOTSENDTOCHAN
+            if (iu->second.get_client(nickname) == NULL) {
+                clients_fd[fd].send_message(get_servername(), Error::err_cannotsendtochan(nickname, channelname));
+                return;
+            }
+
+            // 채널에 send
+        }
     }
-
-    Client &client = clients_fd[fd];
-    it->second->send_message(client.get_identifier(), "PRIVMSG " + nickname + " :" + message);
 }

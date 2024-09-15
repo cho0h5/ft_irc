@@ -4,6 +4,10 @@ std::string Error::err_nosuchnick(const std::string &nickname, const std::string
     return "401 " + nickname + " " + wrong_recipient + " :No such nick/channel";
 }
 
+std::string Error::err_cannotsendtochan(const std::string &nickname, const std::string &channelname) {
+    return "404 " + nickname + " " + channelname + " :Cannot send to nick/channel";
+}
+
 std::string Error::err_norecipient(const std::string &nickname, const std::string &command) {
     return "411 " + nickname + " :No recipient given (" + command + ")";
 }
