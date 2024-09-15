@@ -131,7 +131,7 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
             continue;
         }
 
-        if (channel.get_option_invite_only()) {
+        if (channel.get_option_invite_only() && channel.get_invited_client(clients_fd[fd].get_nickname()) == NULL) {
             // invite only : ERR_INVITEONLYCHAN, 473
             // send_error(fd, 473);
             continue;
