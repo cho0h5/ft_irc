@@ -21,8 +21,9 @@ bool check_channel_name(const std::string &channel_name) {
     }
     return true;
 }
-
+#include <iostream>
 void Server::command_join(const int fd, std::vector<std::string> &cmds) {
+    std::cout << "1\n";
     if (!clients_fd[fd].get_is_registered()) {
         clients_fd[fd].send_message(get_servername(), Error::err_notregistered());
         return;
@@ -43,6 +44,8 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
         return;
     }
 
+    std::cout << "2\n";
+
     // 참여중인 모든 채널에서 나감
     if (cmds.size() == 2 && cmds[0] == "JOIN" && cmds[1] == "0") {
         for (std::map<std::string, Channel>::iterator iter = channels.begin(); iter != channels.end(); iter++) {
@@ -59,24 +62,38 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
         return;
     }
 
+    std::cout << "3\n";
 
     // get channel names
     std::vector<std::string> input_channels;
-    while (cmds[1].find(',') != std::string::npos) {
-        const size_t pos = cmds[1].find(',');
-        input_channels.push_back(cmds[1].substr(0, pos));
-        cmds[1].erase(0, pos + 1);
+    if (cmds[1].find(',') == std::string::npos) {
+        input_channels.push_back(cmds[1]);
+    }
+    else {
+        while (cmds[1].find(',') != std::string::npos) {
+            const size_t pos = cmds[1].find(',');
+            input_channels.push_back(cmds[1].substr(0, pos));
+            cmds[1].erase(0, pos + 1);
+        }
     }
 
     std::vector<std::string> keys(input_channels.size(), "");
     // get channel keys
     if (cmds.size() == 3) {
-        while (cmds[2].find(',') != std::string::npos) {
-            const size_t pos = cmds[2].find(',');
-            keys.push_back(cmds[2].substr(0, pos));
-            cmds[2].erase(0, pos + 1);
+        if (cmds[1].find(',') == std::string::npos) {
+            keys[0] = cmds[2];
+        }
+        else {
+            size_t idx = 0;
+            while (cmds[2].find(',') != std::string::npos) {
+                const size_t pos = cmds[2].find(',');
+                keys[idx++] = cmds[2].substr(0, pos);
+                cmds[2].erase(0, pos + 1);
+            }
         }
     }
+
+    std::cout << "4\n";
 
     // join channels
     for (size_t i = 0; i < input_channels.size(); i++) {
@@ -86,6 +103,7 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
             // send_error(fd, 476);
             return;
         }
+        std::cout << "5\n";
 
         // find channel names in server
         std::map<std::string, Channel>::iterator iter = channels.find(input_channels[i]);
@@ -95,8 +113,13 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
             std::string channel_name = input_channels[i];
             channels[channel_name] = Channel(channel_name);
 
-            if (keys[i] != "")
-                channels[channel_name].set_channel_key(keys[i]);
+            if (keys[i] != "") {
+                std::cout << "set_key : \n";
+                Channel& channel = channels[channel_name];
+                channel.set_channel_key(keys[i]);
+                std::cout << "channel_key : " << channel.get_key() << "\n";
+            }
+
 
             channels[channel_name].add_client(&clients_fd[fd]);
             channels[channel_name].add_operator(&clients_fd[fd]);
@@ -107,41 +130,46 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
             continue;
         }
 
+        std::cout << "6\n";
+    
         Channel channel = iter->second;
-        if (keys[i] != "" && keys[i] != channel.get_key()) {
+        std::cout << "channel_key : " << channel.get_key() << "\n";
+        if (keys[i] != channel.get_key()) {
             // incorrect key : ERR_BADCHANNELKEY, 475
             // send_error(fd, 475);
             continue;
         }
 
+        std::cout << "7\n";
         if (channel.get_current_users_count() == channel.get_users_limit()) {
             // channel is full : ERR_CHANNELISFULL, 471
             // send_error(fd, 471);
             continue;
         }
 
+        std::cout << "8\n";
         if (channel.get_option_invite_only()) {
             // invite only : ERR_INVITEONLYCHAN, 473
             // send_error(fd, 473);
             continue;
         }
 
+        std::cout << "9\n";
         channel.add_client(&clients_fd[fd]);
         channel.set_current_users_count(channel.get_current_users_count() + 1);
 
+        std::cout << "10\n";
         clients_fd[fd].send_message(clients_fd[fd].get_identifier(), "JOIN " + channel.get_name());
-            clients_fd[fd].send_message(get_servername(), "MODE " + channel.get_name() + " +Cnst");
-            std::map<std::string, Client*> joined_users = channel.get_clients();
-            std::map<std::string, Client*> joined_operators = channel.get_operators();
-            std::string joined_users_str = "";
-            for (std::map<std::string, Client*>::iterator iter = joined_users.begin(); iter != joined_users.end(); iter++) {
-                if (joined_operators.find(iter->first) != joined_operators.end())
-                    joined_users_str += "@";
-                else
-                joined_users_str += iter->first + " ";
-            }
-            clients_fd[fd].send_message(get_servername(), "353 " + clients_fd[fd].get_nickname() + " @ " + channel.get_name() + " :" + joined_users_str);
-            clients_fd[fd].send_message(get_servername(), "366 " + clients_fd[fd].get_nickname() + " " + channel.get_name() + " :End of /NAMES list");
+        std::map<std::string, Client*> joined_users = channel.get_clients();
+        std::map<std::string, Client*> joined_operators = channel.get_operators();
+        std::string joined_users_str = "";
+        for (std::map<std::string, Client*>::iterator iter = joined_users.begin(); iter != joined_users.end(); iter++) {
+            if (joined_operators.find(iter->first) != joined_operators.end())
+                joined_users_str += "@";
+            joined_users_str += iter->first + " ";
+        }
+        clients_fd[fd].send_message(get_servername(), "353 " + clients_fd[fd].get_nickname() + " @ " + channel.get_name() + " :" + joined_users_str);
+        clients_fd[fd].send_message(get_servername(), "366 " + clients_fd[fd].get_nickname() + " " + channel.get_name() + " :End of /NAMES list");
 
     }
 }
