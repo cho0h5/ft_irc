@@ -97,6 +97,11 @@ int Server::open_server() {
 	addr.sin_port = htons(server_port);
 	addr.sin_addr.s_addr = INADDR_ANY;
 
+	int optval = 1;
+	if (setsockopt(server_socket_fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) < 0) {
+	    return -1;
+	}
+
 	if (bind(server_socket_fd, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
 	   return -1;
 	}
