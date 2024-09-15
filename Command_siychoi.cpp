@@ -1,3 +1,4 @@
+#include "Error.hpp"
 #include "Server.hpp"
 #include "Client.hpp"
 #include <algorithm>
@@ -20,6 +21,10 @@
 //	6-1. o option에 nick이 존재하는지 확인(401)
 
 void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
+    if (!clients_fd[fd].get_is_registered()) {
+        clients_fd[fd].send_message(get_servername(), Error::err_notregistered());
+        return;
+    }
 
 	(void)fd;
   	(void)cmds;
@@ -48,12 +53,12 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 		//send_error(fd, 403)
 		return ;
 	}
-	
+
 	if (cmds.size() == 2) {
 		// 채널정보 출력
 		return ;
 	}
-	
+
 	//std::vector<Client*>& clients = channels.find(channel_name)->second.get_clients();
 	//std::vector<Client*>& operators = channels.find(channel_name)->second.get_operators();
 
@@ -65,5 +70,5 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 	//	//send_error(fd, 482)
 	//	return ;
 	//}
-	
+
 }

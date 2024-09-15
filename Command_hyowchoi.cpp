@@ -82,6 +82,11 @@ void Server::command_user(const int fd, const std::vector<std::string> &cmds) {
 }
 
 void Server::command_privmsg_user(const int fd, const std::vector<std::string> &cmds) {
+    if (!clients_fd[fd].get_is_registered()) {
+        clients_fd[fd].send_message(get_servername(), Error::err_notregistered());
+        return;
+    }
+
     const std::string command = cmds[0];
     const std::string &nickname = clients_fd[fd].get_nickname();
 
@@ -109,6 +114,11 @@ void Server::command_privmsg_user(const int fd, const std::vector<std::string> &
 }
 
 void Server::command_privmsg_channel(const int fd, const std::vector<std::string> &cmds) {
+    if (!clients_fd[fd].get_is_registered()) {
+        clients_fd[fd].send_message(get_servername(), Error::err_notregistered());
+        return;
+    }
+
     (void)fd;
     (void)cmds;
 }

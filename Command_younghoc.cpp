@@ -1,3 +1,4 @@
+#include "Error.hpp"
 #include "Server.hpp"
 #include "Client.hpp"
 
@@ -23,7 +24,11 @@ bool check_channel_name(const std::string &channel_name) {
 
 
 void Server::command_join(const int fd, std::vector<std::string> &cmds) {
-    
+    if (!clients_fd[fd].get_is_registered()) {
+        clients_fd[fd].send_message(get_servername(), Error::err_notregistered());
+        return;
+    }
+
     // not enough parameters : ERR_NEEDMOREPARAMS, 461
     if (cmds.size() < 2) {
         // send_error(fd, 461);
@@ -45,9 +50,9 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
             Channel channel = iter->second;
 
             // 해당 클라이언트가 채널에 속해있는지 확인
-            if (channel.get_clients(clients_fd[fd].get_nickname()) == NULL) 
+            if (channel.get_clients(clients_fd[fd].get_nickname()) == NULL)
                 continue;
-            
+
             channel.remove_client(&clients_fd[fd]);
             channel.remove_operator(&clients_fd[fd]);
             channel.set_current_users_count(channel.get_current_users_count() - 1);
@@ -76,7 +81,7 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
 
     // join channels
     for (size_t i = 0; i < input_channels.size(); i++) {
-        
+
         if (!check_channel_name(input_channels[i])) {
             // incorrect channel name : ERR_BADCHANMASK, 476
             // send_error(fd, 476);
@@ -119,16 +124,31 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
 
 
 void Server::command_topic(const int fd, const std::vector<std::string> &cmds) {
+    if (!clients_fd[fd].get_is_registered()) {
+        clients_fd[fd].send_message(get_servername(), Error::err_notregistered());
+        return;
+    }
+
     (void)fd;
     (void)cmds;
 }
 
 void Server::command_invite(const int fd, const std::vector<std::string> &cmds) {
+    if (!clients_fd[fd].get_is_registered()) {
+        clients_fd[fd].send_message(get_servername(), Error::err_notregistered());
+        return;
+    }
+
     (void)fd;
     (void)cmds;
 }
 
 void Server::command_kick(const int fd, const std::vector<std::string> &cmds) {
+    if (!clients_fd[fd].get_is_registered()) {
+        clients_fd[fd].send_message(get_servername(), Error::err_notregistered());
+        return;
+    }
+
     (void)fd;
     (void)cmds;
 }
