@@ -50,6 +50,8 @@ class Channel {
         void add_operator(Client* client);
         void remove_operator(Client* client);
 
+        void send_message(const Client &client, const std::string &message) const;
+
     private:
         std::map<std::string, Client*> clients;
         std::map<std::string, Client*> operators;

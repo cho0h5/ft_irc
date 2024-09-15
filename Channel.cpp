@@ -97,3 +97,15 @@ void Channel::remove_operator(Client* client) {
         return;
     operators.erase(client->get_nickname());
 }
+
+void Channel::send_message(const Client &client, const std::string &message) const {
+    const std::string sender_identifier = client.get_identifier();
+
+    for (std::map<std::string, Client*>::const_iterator it = clients.begin(); it != clients.end(); it++) {
+        if (it->second->get_fd() == client.get_fd()) {   // 송신자에게는 보내지 않음
+            continue;
+        }
+
+        it->second->send_message(sender_identifier, message);
+    }
+}
