@@ -8,12 +8,18 @@ Channel::Channel() {
     current_users_count = 0;
 }
 
-std::map<std::string, Client*>& Channel::get_clients() {
-    return clients;
+Client* Channel::get_clients(std::string client_nickname) {
+    if (clients.find(client_nickname) == clients.end()) {
+        return NULL;
+    }
+    return clients[client_nickname];
 }
 
-std::map<std::string, Client*>& Channel::get_operators() {
-    return operators;
+Client* Channel::get_operators(std::string operator_nickname) {
+    if (operators.find(operator_nickname) == operators.end()) {
+        return NULL;
+    }
+    return operators[operator_nickname];
 }
 
 
@@ -55,5 +61,19 @@ void Channel::add_client(Client* client) {
 }
 
 void Channel::remove_client(Client* client) {
+    if (client == NULL)
+        return;
     clients.erase(client->get_nickname());
+}
+
+void Channel::add_operator(Client* client) {
+    if (client == NULL)
+        return;
+    operators[client->get_nickname()] = client;
+}
+
+void Channel::remove_operator(Client* client) {
+    if (client == NULL)
+        return;
+    operators.erase(client->get_nickname());
 }
