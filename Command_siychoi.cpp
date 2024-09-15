@@ -30,8 +30,8 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
   	(void)cmds;
 	std::string	channel_name, user_name;	//username은 어떻게 정의하지? fd로 하는 건가
 	std::map<bool, std::string>	options;
-	// const std::set<char> valid_option_chars = "+-itrko";
-	unsigned int option_parameters = 0;
+	// const std::set<char> valid_option_chars = "+-itrko";    // compile error
+	// unsigned int option_parameters = 0; // compile error
 
 	//1
     if (cmds[0] != "MODE") {
@@ -67,9 +67,9 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 	//4
 	//여기 너무 복잡한데;;
 	for (unsigned long i = 0; i < cmds[2].size(); i++) {
-	   const char c = cmds[2][i];
-		if (c == 'l' || c == 'k' || c == 'o')
-			option_parameters++;
+	   // const char c = cmds[2][i];   // compile error
+		// if (c == 'l' || c == 'k' || c == 'o') // compile error
+			// option_parameters++;  // compile error
 		// if (valid_option_chars.find(c) == std::string::npos) {
 			// send_error(fd, 472);
 			// return ;
