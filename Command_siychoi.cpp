@@ -30,6 +30,8 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
   	(void)cmds;
 	std::string	channel_name, user_name;	//username은 어떻게 정의하지? fd로 하는 건가
 	std::map<bool, std::string>	options;
+	const std::set<char> valid_option_chars = "+-itrko";
+	unsigned int option_parameters = 0;
 
 	//1
     if (cmds[0] != "MODE") {
@@ -38,24 +40,24 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 
 	//2
 	if (cmds.size() < 2) {
-		//send_error(fd, 461);
+		send_error(fd, 461);
 		return ;
 	}
 
 	//3
 	if (cmds[1].at(0) != '#') {
-		//send_error(fd, 403)
+		send_error(fd, 403)
 		return ;
 	}
 	channel_name = cmds[1];
 	channel_name.erase(0, 1);
 	if (channels.find(channel_name) == channels.end()) {
-		//send_error(fd, 403)
+		send_error(fd, 403)
 		return ;
 	}
 
 	if (cmds.size() == 2) {
-		// 채널정보 출력
+		 채널정보 출력
 		return ;
 	}
 
@@ -64,6 +66,14 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 
 	//4
 	//여기 너무 복잡한데;;
+	for (char c : cmds[2]) {
+		if (c == 'l' || c == 'k' || c == 'o')
+			option_parameters++;
+		if (valid_option_chars.find(c) == std::string::npos) {
+			send_error(fd, 472);
+			return ;
+		}
+	}
 
 	//5
 	//if (find(operators.begin(), operators.end(), user_name) == operators.end()) {
