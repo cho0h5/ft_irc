@@ -8,6 +8,8 @@
 
 class Channel {
     public:
+        Channel();
+
         void    kick(Client* client);
         void    invite(Client* client);
         void    topic(Client* client, const std::string& topic);
@@ -27,17 +29,31 @@ class Channel {
         std::map<std::string, Client*>& get_clients();
         std::map<std::string, Client*>& get_operators();
 
+        std::string get_name();
+        std::string get_topic();
+        std::string get_key();
+
+        bool         get_option_invite_only();
+        bool         get_option_topic();
+        unsigned int get_users_limit();
+        unsigned int get_current_users_count();
+
+        void set_current_users_count(unsigned int count);
+        void add_client(Client* client);
+        void remove_client(Client* client);
+
     private:
         std::map<std::string, Client*> clients;
         std::map<std::string, Client*> operators;
 
         std::string channel_name;
         std::string channel_topic;
+        std::string channel_key;
 
         bool is_invite_only;
         bool is_topic_restrict;
-        std::string channel_key;
         unsigned int channel_users_limit;
+        unsigned int current_users_count;
 
 
 };

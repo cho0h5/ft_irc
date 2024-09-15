@@ -164,7 +164,17 @@ void Server::command_parsing(const int fd, const std::string &command) {
         } else {
             command_privmsg_user(fd, tokens);
         }
-    }
+    } else if (exec_cmd == "JOIN") {
+		command_join(fd, tokens);
+	} else if (exec_cmd == "MODE") {
+		command_mode(fd, tokens);
+	} else if (exec_cmd == "TOPIC") {
+		command_topic(fd, tokens);
+	} else if (exec_cmd == "KICK") {
+		command_kick(fd, tokens);
+	} else if (exec_cmd == "INVITE") {
+		command_invite(fd, tokens);
+	}
 
 
 }
