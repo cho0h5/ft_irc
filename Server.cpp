@@ -161,11 +161,7 @@ void Server::command_parsing(const int fd, const std::string &command) {
     } else if (exec_cmd == "USER") {
         command_user(fd, tokens);
     } else if (exec_cmd == "PRIVMSG") {
-        if (tokens[1][0] == '#') {
-            command_privmsg_channel(fd, tokens);
-        } else {
-            command_privmsg_user(fd, tokens);
-        }
+        command_privmsg(fd, tokens);
     } else if (exec_cmd == "JOIN") {
 		command_join(fd, tokens);
 	} else if (exec_cmd == "MODE") {

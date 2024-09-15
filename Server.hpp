@@ -46,8 +46,7 @@ private:
 	// hyowchoi
 	void command_nick(const int fd, const std::vector<std::string> &cmds);
 	void command_user(const int fd, const std::vector<std::string> &cmds);
-	void command_privmsg_user(const int fd, const std::vector<std::string> &cmds);
-	void command_privmsg_channel(const int fd, const std::vector<std::string> &cmds);
+	void command_privmsg(const int fd, const std::vector<std::string> &cmds);
 
 	// younghoc
 	void command_join(const int fd, std::vector<std::string> &cmds);
