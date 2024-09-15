@@ -10,7 +10,7 @@ class Error {
     static std::string err_nosuchnick(const std::string &nickname, const std::string &wrong_recipient);    // 401
     // <client> <channel> :Cannot send to channel
     // :tantalum.libera.chat 404 younghoc #42 :Cannot send to nick/channel
-    static std::string err_cannotsendtochan();    // 404
+    static std::string err_cannotsendtochan(const std::string &nickname, const std::string &channelname);    // 404
 
     // <client> :No recipient given (<command>)
     // :silver.libera.chat 411 younghoc :No recipient given (PRIVMSG)
