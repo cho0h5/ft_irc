@@ -145,7 +145,7 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
 
         std::map<std::string, Client*> joined_users = channel.get_clients();
         for (std::map<std::string, Client*>::iterator iter = joined_users.begin(); iter != joined_users.end(); iter++)
-            iter->second->send_message(iter->second->get_identifier(), "has joined " + channel.get_name());
+            iter->second->send_message(clients_fd[fd].get_identifier(), "JOIN " + channel.get_name());
 
         channel.add_client(&clients_fd[fd]);
         channel.set_current_users_count(channel.get_current_users_count() + 1);
@@ -171,8 +171,9 @@ void Server::command_topic(const int fd, const std::vector<std::string> &cmds) {
         clients_fd[fd].send_message(get_servername(), Error::err_notregistered());
         return;
     }
-    (void)fd;
+      (void)fd;
     (void)cmds;
+
 
 }
 
