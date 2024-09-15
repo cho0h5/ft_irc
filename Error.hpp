@@ -5,10 +5,6 @@
 
 class Error {
     public:
-    // <client> <command> :Unknown command
-    // :lead.libera.chat 421 younghoc ASDF :Unknown command
-    static std::string err_unknowncommand(const std::string &nickname, const std::string &wrong_command);    // 421
-
     // <client> <nickname> :No such nick/channel
     // :silver.libera.chat 401 younghoc asdfawefawe :No such nick/channel
     static std::string err_nosuchnick(const std::string &nickname, const std::string &wrong_recipient);    // 401
@@ -18,6 +14,10 @@ class Error {
     // <client> :No text to send
     // :silver.libera.chat 412 younghoc :No text to send
     static std::string err_notexttosend(const std::string &nickname);  // 412
+
+    // <client> <command> :Unknown command
+    // :lead.libera.chat 421 younghoc ASDF :Unknown command
+    static std::string err_unknowncommand(const std::string &nickname, const std::string &wrong_command);    // 421
 
     // <client> :No nickname given
     // :tantalum.libera.chat 431 * :No nickname given

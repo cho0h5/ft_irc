@@ -41,7 +41,7 @@ private:
 	int open_server();
 	void add_event(uintptr_t ident, int16_t filter, uint16_t flags);
 
-	void welcome(const int fd);
+	void register_client(const int fd);
 
 	// hyowchoi
 	void command_nick(const int fd, const std::vector<std::string> &cmds);

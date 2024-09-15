@@ -1,9 +1,5 @@
 #include "Error.hpp"
 
-std::string Error::err_unknowncommand(const std::string &nickname, const std::string &wrong_command) {
-    return "421 " + nickname + " " + wrong_command + " :Unknown command";
-}
-
 std::string Error::err_nosuchnick(const std::string &nickname, const std::string &wrong_recipient) {
     return "401 " + nickname + " " + wrong_recipient + " :No such nick/channel";
 }
@@ -14,6 +10,10 @@ std::string Error::err_norecipient(const std::string &nickname, const std::strin
 
 std::string Error::err_notexttosend(const std::string &nickname) {
     return "412 " + nickname + " :No text to send";
+}
+
+std::string Error::err_unknowncommand(const std::string &nickname, const std::string &wrong_command) {
+    return "421 " + nickname + " " + wrong_command + " :Unknown command";
 }
 
 std::string Error::err_nonicknamegiven() {

@@ -117,9 +117,10 @@ void Server::set_kqueue_write_event() {
     }
 }
 
-void Server::welcome(const int fd) {
+void Server::register_client(const int fd) {
     const std::string &nickname = clients_fd[fd].get_nickname();
     clients_fd[fd].send_message(get_servername(), "001 " + nickname + " :Welcome!");
+    clients_fd[fd].set_is_registered();
 }
 
 void Server::command_parsing(const int fd, const std::string &command) {
