@@ -25,7 +25,7 @@ class Client {
         void write_handler();
 
         bool is_write_buffer_empty() const;
-        void send_message(const std::string message);
+        void send_message(const std::string &sender, const std::string &message);
 
         bool is_connect_possible() const;
 

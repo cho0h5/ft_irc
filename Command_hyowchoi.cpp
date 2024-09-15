@@ -48,13 +48,13 @@ void Server::command_nick(const int fd, const std::vector<std::string> &cmds) {
 
     // no new_nickname : ERR_NONICKNAMEGIVEN, 431
     if (cmds.size() != 2) {
-        clients_fd[fd].send_message(Error::err_nonicknamegiven());
+        clients_fd[fd].send_message(get_servername(), Error::err_nonicknamegiven());
         return;
     }
 
     // already registered nickname : ERR_NICKNAMEINUSE, 433
     if (clients_nickname.find(cmds[1]) != clients_nickname.end()) {
-        clients_fd[fd].send_message(Error::err_nicknameinuse(cmds[1]));
+        clients_fd[fd].send_message(get_servername(), Error::err_nicknameinuse(cmds[1]));
         return;
     }
 
@@ -62,12 +62,12 @@ void Server::command_nick(const int fd, const std::vector<std::string> &cmds) {
     for (unsigned long i = 0; i < cmds[1].size(); i++) {
         const char c = cmds[1][i];
         if (!(('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z') || ('0' <= c && c <= '9'))) {
-            clients_fd[fd].send_message(Error::err_erroneusnickname(cmds[1]));
+            clients_fd[fd].send_message(get_servername(), Error::err_erroneusnickname(cmds[1]));
             return;
         }
     }
     if (('0' <= cmds[1][0] && cmds[1][0] <= '9')) {
-        clients_fd[fd].send_message(Error::err_erroneusnickname(cmds[1]));
+        clients_fd[fd].send_message(get_servername(), Error::err_erroneusnickname(cmds[1]));
         return;
     }
     // change nickname
@@ -91,7 +91,7 @@ void Server::command_user(const int fd, const std::vector<std::string> &cmds) {
 
     // no username : ERR_NEEDMOREPARAMS, 461
     if (cmds.size() != 5 || cmds[1].empty() || cmds[4].empty()) {
-        clients_fd[fd].send_message(Error::err_needmoreparams(cmds[0]));
+        clients_fd[fd].send_message(get_servername(), Error::err_needmoreparams(cmds[0]));
         return;
     }
 
@@ -99,13 +99,13 @@ void Server::command_user(const int fd, const std::vector<std::string> &cmds) {
     std::map<int, Client>::iterator it = clients_fd.find(fd);
     if (it->second.get_username() != "") {
         const std::string &nickname = clients_fd[fd].get_nickname();
-        clients_fd[fd].send_message(Error::err_alreadyregistered(nickname));
+        clients_fd[fd].send_message(get_servername(), Error::err_alreadyregistered(nickname));
         return;
     }
 
     // username contains space, but not prefixed with colon : 무슨 에러징...
     if (cmds[5].find(" ") != std::string::npos && cmds[5][0] != ':') {
-        clients_fd[fd].send_message(Error::err_needmoreparams(cmds[0]));
+        clients_fd[fd].send_message(get_servername(), Error::err_needmoreparams(cmds[0]));
         return;
     }
     // change username
@@ -122,12 +122,12 @@ void Server::command_privmsg_user(const int fd, const std::vector<std::string> &
     const std::string &nickname = clients_fd[fd].get_nickname();
 
     if (cmds.size() == 1) {
-        clients_fd[fd].send_message(Error::err_norecipient(nickname, command));
+        clients_fd[fd].send_message(get_servername(), Error::err_norecipient(nickname, command));
         return;
     }
 
     if (cmds.size() == 2) {
-        clients_fd[fd].send_message(Error::err_notexttosend(nickname));
+        clients_fd[fd].send_message(get_servername(), Error::err_notexttosend(nickname));
         return;
     }
 
@@ -136,12 +136,12 @@ void Server::command_privmsg_user(const int fd, const std::vector<std::string> &
 
     std::map<std::string, Client*>::iterator it = clients_nickname.find(recipient);
     if (it == clients_nickname.end()) {
-        clients_fd[fd].send_message(Error::err_nosuchnick(nickname, recipient));
+        clients_fd[fd].send_message(get_servername(), Error::err_nosuchnick(nickname, recipient));
         return;
     }
 
     Client &client = clients_fd[fd];
-    it->second->send_message(":" + client.get_identifier() + " PRIVMSG " + nickname + " :" + message);
+    it->second->send_message(client.get_identifier(), "PRIVMSG " + nickname + " :" + message);
 }
 
 void Server::command_privmsg_channel(const int fd, const std::vector<std::string> &cmds) {
