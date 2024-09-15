@@ -70,7 +70,7 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 		if (c == 'l' || c == 'k' || c == 'o')
 			option_parameters++;
 		if (valid_option_chars.find(c) == std::string::npos) {
-			send_error(fd, 472);
+			// send_error(fd, 472);
 			return ;
 		}
 	}
