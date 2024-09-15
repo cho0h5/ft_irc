@@ -45,11 +45,11 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
             Channel channel = iter->second;
 
             // 해당 클라이언트가 채널에 속해있는지 확인
-            if (channel.get_clients(clients_fd[fd]->get_nickname()) == NULL) 
+            if (channel.get_clients(clients_fd[fd].get_nickname()) == NULL) 
                 continue;
             
-            channel.remove_client(clients_fd[fd]);
-            channel.remove_operator(clients_fd[fd]);
+            channel.remove_client(&clients_fd[fd]);
+            channel.remove_operator(&clients_fd[fd]);
             channel.set_current_users_count(channel.get_current_users_count() - 1);
         }
         return;
