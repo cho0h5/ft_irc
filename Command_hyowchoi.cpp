@@ -61,7 +61,7 @@ void Server::command_nick(const int fd, const std::vector<std::string> &cmds) {
     // check valid nickname
     for (unsigned long i = 0; i < cmds[1].size(); i++) {
         const char c = cmds[1][i];
-        if (!(('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z') || ('0' <= c && c <= '9'))) {
+        if (!(('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z') || ('0' <= c && c <= '9') || c == '_')) {
             clients_fd[fd].send_message(get_servername(), Error::err_erroneusnickname(cmds[1]));
             return;
         }
