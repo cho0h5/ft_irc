@@ -38,6 +38,13 @@ Client* Channel::get_operator(std::string operator_nickname) {
     return operators[operator_nickname];
 }
 
+Client* Channel::get_invited_client(std::string operator_nickname) {
+    if (invited_clients.find(operator_nickname) == invited_clients.end()) {
+        return NULL;
+    }
+    return invited_clients[operator_nickname];
+}
+
 
 std::string Channel::get_name() {
     return channel_name;
