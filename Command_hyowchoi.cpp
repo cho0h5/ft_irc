@@ -112,13 +112,3 @@ void Server::command_privmsg_user(const int fd, const std::vector<std::string> &
     Client &client = clients_fd[fd];
     it->second->send_message(client.get_identifier(), "PRIVMSG " + nickname + " :" + message);
 }
-
-void Server::command_privmsg_channel(const int fd, const std::vector<std::string> &cmds) {
-    if (!clients_fd[fd].get_is_registered()) {
-        clients_fd[fd].send_message(get_servername(), Error::err_notregistered());
-        return;
-    }
-
-    (void)fd;
-    (void)cmds;
-}
