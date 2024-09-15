@@ -1,7 +1,7 @@
 #include "Error.hpp"
 #include "Server.hpp"
 #include "Client.hpp"
-#include <algorithm>
+#include <set>
 
 //1. mode인지 확인
 //2. parameter 있는지 확인(461)
@@ -40,24 +40,24 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 
 	//2
 	if (cmds.size() < 2) {
-		send_error(fd, 461);
+		// send_error(fd, 461);
 		return ;
 	}
 
 	//3
 	if (cmds[1].at(0) != '#') {
-		send_error(fd, 403)
+		// send_error(fd, 403)
 		return ;
 	}
 	channel_name = cmds[1];
 	channel_name.erase(0, 1);
 	if (channels.find(channel_name) == channels.end()) {
-		send_error(fd, 403)
+		// send_error(fd, 403)
 		return ;
 	}
 
 	if (cmds.size() == 2) {
-		 채널정보 출력
+		 // 채널정보 출력
 		return ;
 	}
 
