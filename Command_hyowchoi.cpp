@@ -6,7 +6,6 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include <xlocale/_stdio.h>
 
 // NICK <new_nickname>
 // TODO : client 객체 생성 시 nickname 임의로 지정
