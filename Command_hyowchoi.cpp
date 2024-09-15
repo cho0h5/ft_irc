@@ -1,42 +1,6 @@
 #include "Error.hpp"
 #include "Server.hpp"
 #include "Client.hpp"
-// #include <sstream>
-
-// void Server::command_parsing(const int fd, std::string command) {
-//     const std::string Commands[] = {
-//         "NICK", "USER", "PRIVMSG", "JOIN", "MODE", "TOPIC", "KICK", "INVITE" };
-//     std::stringstream ss(command);
-//     std::string exec_cmd, token;
-//     std::vector<std::string> tokens;
-
-//     // find execute commands
-//     for (const std::string &cmd : Commands) {
-//         if (command.find(cmd) == 0) {
-//             exec_cmd = cmd;
-//             break;
-//         }
-//     }
-
-//     // tokenize
-//     while (ss >> token) {
-//         tokens.push_back(token);
-//     }
-
-//     if (exec_cmd == "NICK") {
-//         command_nick(fd, tokens[1]);
-//     } else if (exec_cmd == "USER") {
-//         command_user(fd, tokens[1], tokens[4]);
-//     // } else if (exec_cmd == "PRIVMSG") {
-//     //     if (tokens[1][0] == '#') {
-//     //         command_privmsg_channel(tokens[1], tokens[2]);
-//     //     } else {
-//     //         command_privmsg_user(tokens[1], tokens[2]);
-//     //     }
-//     }
-
-
-// }
 
 // NICK <new_nickname>
 // TODO : client 객체 생성 시 nickname 임의로 지정
