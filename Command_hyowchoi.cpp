@@ -119,6 +119,7 @@ void Server::command_privmsg(const int fd, const std::vector<std::string> &cmds)
 
     const std::string message = cmds[2];
     const std::vector<std::string> recipients = split_recipients(cmds[1]);
+    const Client &client = clients_fd[fd];
 
     for (std::vector<std::string>::const_iterator it = recipients.begin(); it != recipients.end(); it++) {
         if (it->rfind("#", 0) != 0) {   // to one person
@@ -130,7 +131,6 @@ void Server::command_privmsg(const int fd, const std::vector<std::string> &cmds)
                 return;
             }
 
-            Client &client = clients_fd[fd];
             iu->second->send_message(client.get_identifier(), "PRIVMSG " + nickname + " :" + message);
         } else {    // to channel
             const std::string &channelname = *it;
@@ -147,7 +147,7 @@ void Server::command_privmsg(const int fd, const std::vector<std::string> &cmds)
                 return;
             }
 
-            // 채널에 send
+            iu->second.send_message(client, message);
         }
     }
 }
