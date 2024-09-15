@@ -22,7 +22,6 @@ bool check_channel_name(const std::string &channel_name) {
     return true;
 }
 
-
 void Server::command_join(const int fd, std::vector<std::string> &cmds) {
     if (!clients_fd[fd].get_is_registered()) {
         clients_fd[fd].send_message(get_servername(), Error::err_notregistered());
