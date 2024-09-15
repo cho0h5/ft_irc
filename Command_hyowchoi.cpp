@@ -81,7 +81,7 @@ void Server::command_user(const int fd, const std::vector<std::string> &cmds) {
     }
 }
 
-void Server::command_privmsg_user(const int fd, const std::vector<std::string> &cmds) {
+void Server::command_privmsg(const int fd, const std::vector<std::string> &cmds) {
     if (!clients_fd[fd].get_is_registered()) {
         clients_fd[fd].send_message(get_servername(), Error::err_notregistered());
         return;
