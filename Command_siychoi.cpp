@@ -168,7 +168,6 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 				}
 				channel.add_operator(clients_nickname[cmds[args_idx++]]);
 			}
-
 		}
 	}
 	// 4. remove mode, itkol
@@ -229,4 +228,19 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 			}
 		}
 	}
+
+	// make message with success commands
+
+	// no mode changed
+	if (success_cmds[0] == "+" || success_cmds[0] == "-")
+		return;
+
+	std::string successed_mode_cmds_message = "";
+	for (size_t i = 0; i < success_cmds.size(); i++)
+	 	successed_mode_cmds_message += (success_cmds[i] + " ");
+
+	// send changed mode to all clients in the channel
+    std::map<std::string, Client*> joined_users = channel.get_clients();
+    for (std::map<std::string, Client*>::iterator iter = joined_users.begin(); iter != joined_users.end(); iter++)
+        iter->second->send_message(clients_fd[fd].get_identifier(), "MODE " + channel.get_name() + " " + successed_mode_cmds_message);
 }
