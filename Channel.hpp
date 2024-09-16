@@ -30,11 +30,11 @@ class Channel {
         void set_channel_users_limit(unsigned int limit);
 
         std::map<std::string, Client*> get_clients() const;
-        std::map<std::string, Client*> get_operators();
+        std::map<std::string, Client*> get_operators() const;
 
         Client* get_client(std::string client_nickname) const;
-        Client* get_operator(std::string operator_nickname);
-        Client* get_invited_client(std::string operator_nickname);
+        Client* get_operator(std::string operator_nickname) const;
+        Client* get_invited_client(std::string operator_nickname) const;
 
         std::string get_name();
         std::string get_topic();

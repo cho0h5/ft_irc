@@ -29,7 +29,7 @@ std::map<std::string, Client*> Channel::get_clients() const {
     return clients;
 }
 
-std::map<std::string, Client*> Channel::get_operators() {
+std::map<std::string, Client*> Channel::get_operators() const {
     return operators;
 }
 
@@ -42,18 +42,20 @@ Client* Channel::get_client(std::string client_nickname) const {
     return it->second;
 }
 
-Client* Channel::get_operator(std::string operator_nickname) {
-    if (operators.find(operator_nickname) == operators.end()) {
+Client* Channel::get_operator(std::string operator_nickname) const {
+    std::map<std::string, Client*>::const_iterator it = operators.find(operator_nickname);
+    if (it == operators.end()) {
         return NULL;
     }
-    return operators[operator_nickname];
+    return it->second;
 }
 
-Client* Channel::get_invited_client(std::string operator_nickname) {
-    if (invited_clients.find(operator_nickname) == invited_clients.end()) {
+Client* Channel::get_invited_client(std::string operator_nickname) const {
+    std::map<std::string, Client*>::const_iterator it = invited_clients.find(operator_nickname);
+    if (it == invited_clients.end()) {
         return NULL;
     }
-    return invited_clients[operator_nickname];
+    return it->second;
 }
 
 
