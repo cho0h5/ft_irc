@@ -6,6 +6,7 @@
 #include <iostream>
 #include <sstream>
 #include "Server.hpp"
+#include "Channel.hpp"
 #include "Client.hpp"
 #include "Error.hpp"
 
@@ -137,6 +138,18 @@ void Server::remove_client(const int fd) {
     clients_nickname.erase(clients_fd[fd].get_nickname());
     clients_fd.erase(fd);
     close(fd);
+
+    prune_channel();
+}
+
+void Server::prune_channel() {
+    for (std::map<std::string, Channel>::const_iterator it = channels.begin(); it != channels.end(); ) {
+        if (it->second.get_clients().empty()) {
+            it = channels.erase(it);
+        } else {
+            it++;
+        }
+    }
 }
 
 void Server::command_parsing(const int fd, const std::string &command) {

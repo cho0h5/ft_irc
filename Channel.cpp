@@ -25,7 +25,7 @@ Channel::Channel(std::string name) : channel_mode("+") {
     channel_generated_time = std::to_string(unix_timestamp);
 }
 
-std::map<std::string, Client*> Channel::get_clients() {
+std::map<std::string, Client*> Channel::get_clients() const {
     return clients;
 }
 

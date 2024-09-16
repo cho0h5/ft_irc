@@ -44,6 +44,8 @@ private:
 	void register_client(const int fd);
 	void remove_client(const int fd);
 
+	void prune_channel();
+
 	// hyowchoi
 	void command_nick(const int fd, const std::vector<std::string> &cmds);
 	void command_user(const int fd, const std::vector<std::string> &cmds);
