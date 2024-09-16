@@ -59,32 +59,32 @@ Client* Channel::get_invited_client(std::string operator_nickname) const {
 }
 
 
-std::string Channel::get_name() {
+std::string Channel::get_name() const {
     return channel_name;
 }
 
-std::string Channel::get_topic() {
+std::string Channel::get_topic() const {
     return channel_topic;
 }
 
-std::string Channel::get_key() {
+std::string Channel::get_key() const {
     return channel_key;
 }
 
 
-bool    Channel::get_option_invite_only() {
+bool    Channel::get_option_invite_only() const {
     return is_invite_only;
 }
 
-bool    Channel::get_option_topic_restrict() {
+bool    Channel::get_option_topic_restrict() const {
     return is_topic_restrict;
 }
 
-unsigned int    Channel::get_users_limit() {
+unsigned int    Channel::get_users_limit() const {
     return channel_users_limit;
 }
 
-unsigned int Channel::get_current_users_count() {
+unsigned int Channel::get_current_users_count() const {
     return current_users_count;
 }
 
@@ -155,7 +155,7 @@ void Channel::remove_channel_mode(std::string mode) {
     }
 }
 
-std::string Channel::get_channel_mode() {
+std::string Channel::get_channel_mode() const {
     return channel_mode;
 }
 
@@ -179,7 +179,7 @@ void Channel::set_channel_users_limit(unsigned int limit) {
     channel_users_limit = limit;
 }
 
-std::string Channel::get_channel_params() {
+std::string Channel::get_channel_params() const {
     std::string params = "";
     for (size_t idx = 0; idx < channel_mode.size(); idx++) {
         if (channel_mode[idx] == 'k')
@@ -190,6 +190,6 @@ std::string Channel::get_channel_params() {
     return params;
 }
 
-std::string Channel::get_channel_generated_time() {
+std::string Channel::get_channel_generated_time() const {
     return channel_generated_time;
 }

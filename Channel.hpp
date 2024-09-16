@@ -36,14 +36,14 @@ class Channel {
         Client* get_operator(std::string operator_nickname) const;
         Client* get_invited_client(std::string operator_nickname) const;
 
-        std::string get_name();
-        std::string get_topic();
-        std::string get_key();
+        std::string get_name() const;
+        std::string get_topic() const;
+        std::string get_key() const;
 
-        bool         get_option_invite_only();
-        bool         get_option_topic_restrict();
-        unsigned int get_users_limit();
-        unsigned int get_current_users_count();
+        bool         get_option_invite_only() const;
+        bool         get_option_topic_restrict() const;
+        unsigned int get_users_limit() const;
+        unsigned int get_current_users_count() const;
 
         void set_channel_key(std::string key);
         void set_channel_topic(std::string topic);
@@ -55,7 +55,7 @@ class Channel {
 
         void add_operator(Client* client);
         void remove_operator(Client* client);
-        std::string get_channel_mode();
+        std::string get_channel_mode() const;
 
         void add_invited_client(Client* client);
 
@@ -63,8 +63,8 @@ class Channel {
         void add_channel_mode(std::string mode);
         void remove_channel_mode(std::string mode);
 
-        std::string get_channel_params();
-        std::string get_channel_generated_time();
+        std::string get_channel_params() const;
+        std::string get_channel_generated_time() const;
         /*----------------------message----------------------*/
         void send_message(const Client &client, const std::string &message) const;
 
