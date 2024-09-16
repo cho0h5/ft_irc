@@ -84,7 +84,6 @@ class Channel {
 
         std::string channel_mode;
         std::string channel_generated_time;
-
 };
 
 #endif
