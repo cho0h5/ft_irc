@@ -51,10 +51,10 @@ class Channel {
 
         void set_current_users_count(const unsigned int count);
         void add_client(Client* client);
-        void remove_client(Client* client);
+        void remove_client(const Client* client);
 
         void add_operator(Client* client);
-        void remove_operator(Client* client);
+        void remove_operator(const Client* client);
         std::string get_channel_mode() const;
 
         void add_invited_client(Client* client);

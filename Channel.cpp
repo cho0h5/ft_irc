@@ -104,7 +104,7 @@ void Channel::add_client(Client* client) {
     clients[client->get_nickname()] = client;
 }
 
-void Channel::remove_client(Client* client) {
+void Channel::remove_client(const Client* client) {
     if (client == NULL)
         return;
     clients.erase(client->get_nickname());
@@ -116,7 +116,7 @@ void Channel::add_operator(Client* client) {
     operators[client->get_nickname()] = client;
 }
 
-void Channel::remove_operator(Client* client) {
+void Channel::remove_operator(const Client* client) {
     if (client == NULL)
         return;
     operators.erase(client->get_nickname());
