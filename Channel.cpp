@@ -1,10 +1,16 @@
 #include "Channel.hpp"
+#include <chrono>
 
 Channel::Channel() : channel_mode("+") {
     is_invite_only = false;
     is_topic_restrict = true;
     channel_users_limit = 500;
     current_users_count = 1;
+
+    std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+    std::time_t unix_timestamp = std::chrono::system_clock::to_time_t(now);
+
+    channel_generated_time = std::to_string(unix_timestamp);
 }
 Channel::Channel(std::string name) : channel_mode("+") {
     channel_name = name;
@@ -12,6 +18,11 @@ Channel::Channel(std::string name) : channel_mode("+") {
     is_topic_restrict = true;
     channel_users_limit = 500;
     current_users_count = 1;
+
+     std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+    std::time_t unix_timestamp = std::chrono::system_clock::to_time_t(now);
+
+    channel_generated_time = std::to_string(unix_timestamp);
 }
 
 std::map<std::string, Client*> Channel::get_clients() {
@@ -175,4 +186,8 @@ std::string Channel::get_channel_params() {
             params += "l" + std::to_string(channel_users_limit);
     }
     return params;
+}
+
+std::string Channel::get_channel_generated_time() {
+    return channel_generated_time;
 }

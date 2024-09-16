@@ -1,7 +1,6 @@
 #include "Error.hpp"
 #include "Server.hpp"
 #include "Client.hpp"
-#include <set>
 
 //1. mode인지 확인
 //2. parameter 있는지 확인(461)
@@ -34,6 +33,16 @@ int get_user_limit(const std::string &str) {
 	return limit;
 }
 
+bool is_right_mode(const std::string &str) {
+	if (str[0] != '+' && str[0] != '-')
+		return false;
+	for (size_t i = 1; i < str.size(); i++) {
+		if (str[i] != 'i' && str[i] != 't' && str[i] != 'k' && str[i] != 'o' && str[i] != 'l') // itkol
+			return false;
+	}
+	return true;
+}
+
 void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
     if (!clients_fd[fd].get_is_registered()) {
         clients_fd[fd].send_message(get_servername(), Error::err_notregistered());
@@ -57,7 +66,7 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 	// no such channel : ERR_NOSUCHCHANNEL, 403
 	if (iter == channels.end()) {
 		clients_fd[fd].send_message(get_servername(), Error::err_nosuchchannel(clients_fd[fd].get_nickname(), cmds[1]));
-		return ;
+		return;
 	}
 
 	// 5. not channel operator : ERR_CHANOPRIVSNEEDED, 482
@@ -71,11 +80,19 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 	// show channel mode info
 	if (cmds.size() == 2) {
 		clients_fd[fd].send_message(get_servername(), "324 " + clients_fd[fd].get_nickname() + " " + channel.get_name() + " " + channel.get_channel_mode() + " " + channel.get_channel_params());
+		clients_fd[fd].send_message(get_servername(), "329 " + clients_fd[fd].get_nickname() + " " + channel.get_name() + " " + channel.get_channel_genrated_time());
 		return ;
 	}
 
+	// 4. add mode, itkol
 	unsigned int args_idx = 3, args_size = cmds.size();
-	// 4. add mode , itkol
+	
+	// unknown mode char : ERR_UNKNOWNMODE, 472
+	if (!is_right_mode(cmds[2])) {
+		clients_fd[fd].send_message(get_servername(), Error::err_unknownmode(clients_fd[fd].get_nickname(), cmds[2]));
+		return;
+	}
+
 	if (cmds[2][0] == '+') {
 		for (size_t i = 1; i < cmds[2].size(); i++) {
 
@@ -143,11 +160,6 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 				}
 				channel.add_operator(clients_nickname[cmds[args_idx++]]);
 			}
-			// unknown mode char : ERR_UNKNOWNMODE, 472
-			else {
-				clients_fd[fd].send_message(get_servername(), Error::err_unknownmode(clients_fd[fd].get_nickname(), std::string(1, cmds[2][i])));
-				continue;
-			}
 		}
 	}
 	// 4. remove mode, itkol
@@ -196,21 +208,11 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 				}
 				// not channel operator : ERR_CHANOPRIVSNEEDED, 482
 				if (channel.get_operator(cmds[args_idx]) == NULL) {
-					clients_fd[fd].send_message(get_servername(), Error::err_chanoprivsneeded(clients_fd[fd].get_nickname(), cmds[args_idx++]));
+					// clients_fd[fd].send_message(get_servername(), Error::err_chanoprivsneeded(clients_fd[fd].get_nickname(), cmds[args_idx++]));
 					continue;
 				}
-			}
-			// unknown mode char : ERR_UNKNOWNMODE, 472
-			else {
-				clients_fd[fd].send_message(get_servername(), Error::err_unknownmode(clients_fd[fd].get_nickname(), std::string(1, cmds[2][i])));
-				continue;
+				channel.remove_operator(clients_nickname[cmds[args_idx++]]);
 			}
 		}
-	}
-	// +, -가 아닌 다른 문자가 올 경우
-	// unknown mode char : ERR_UNKNOWNMODE, 472
-	else {
-		clients_fd[fd].send_message(get_servername(), Error::err_unknownmode(clients_fd[fd].get_nickname(), cmds[2]));
-		return;
 	}
 }
