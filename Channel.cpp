@@ -34,7 +34,7 @@ std::map<std::string, Client*> Channel::get_operators() const {
 }
 
 
-Client* Channel::get_client(std::string client_nickname) const {
+Client* Channel::get_client(const std::string &client_nickname) const {
     std::map<std::string, Client*>::const_iterator it = clients.find(client_nickname);
     if (it == clients.end()) {
         return NULL;
@@ -42,7 +42,7 @@ Client* Channel::get_client(std::string client_nickname) const {
     return it->second;
 }
 
-Client* Channel::get_operator(std::string operator_nickname) const {
+Client* Channel::get_operator(const std::string &operator_nickname) const {
     std::map<std::string, Client*>::const_iterator it = operators.find(operator_nickname);
     if (it == operators.end()) {
         return NULL;
@@ -50,7 +50,7 @@ Client* Channel::get_operator(std::string operator_nickname) const {
     return it->second;
 }
 
-Client* Channel::get_invited_client(std::string operator_nickname) const {
+Client* Channel::get_invited_client(const std::string &operator_nickname) const {
     std::map<std::string, Client*>::const_iterator it = invited_clients.find(operator_nickname);
     if (it == invited_clients.end()) {
         return NULL;
@@ -88,11 +88,11 @@ unsigned int Channel::get_current_users_count() const {
     return current_users_count;
 }
 
-void Channel::set_channel_key(std::string key) {
+void Channel::set_channel_key(const std::string &key) {
     channel_key = key;
 }
 
-void Channel::set_channel_topic(std::string topic) {
+void Channel::set_channel_topic(const std::string &topic) {
     channel_topic = topic;
 }
 
@@ -141,14 +141,14 @@ void Channel::send_message(const Client &client, const std::string &message) con
 }
 
 
-void Channel::add_channel_mode(std::string mode) {
+void Channel::add_channel_mode(const std::string &mode) {
     for (size_t idx = 0; idx < mode.size(); idx++) {
         if (channel_mode.find(mode[idx]) == std::string::npos)
             channel_mode += mode[idx];
     }
 }
 
-void Channel::remove_channel_mode(std::string mode) {
+void Channel::remove_channel_mode(const std::string &mode) {
     for (size_t idx = 0; idx < mode.size(); idx++) {
         if (channel_mode.find(mode[idx]) != std::string::npos)
             channel_mode.erase(channel_mode.find(mode[idx]), 1);

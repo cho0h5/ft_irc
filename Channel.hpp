@@ -13,7 +13,7 @@ class Channel {
 
         void    kick(Client* client);
         void    invite(Client* client);
-        void    topic(Client* client, const std::string& topic);
+        void    topic(Client* client, const std::string &topic);
 
         void    set_option_i();
         void    set_option_t();
@@ -27,14 +27,14 @@ class Channel {
         // void    unset_option_o(Client* client);
         // void    unset_option_l();
 
-        void set_channel_users_limit(unsigned int limit);
+        void set_channel_users_limit(const unsigned int limit);
 
         std::map<std::string, Client*> get_clients() const;
         std::map<std::string, Client*> get_operators() const;
 
-        Client* get_client(std::string client_nickname) const;
-        Client* get_operator(std::string operator_nickname) const;
-        Client* get_invited_client(std::string operator_nickname) const;
+        Client* get_client(const std::string &client_nickname) const;
+        Client* get_operator(const std::string &operator_nickname) const;
+        Client* get_invited_client(const std::string &operator_nickname) const;
 
         std::string get_name() const;
         std::string get_topic() const;
@@ -45,11 +45,11 @@ class Channel {
         unsigned int get_users_limit() const;
         unsigned int get_current_users_count() const;
 
-        void set_channel_key(std::string key);
-        void set_channel_topic(std::string topic);
+        void set_channel_key(const std::string &key);
+        void set_channel_topic(const std::string &topic);
 
 
-        void set_current_users_count(unsigned int count);
+        void set_current_users_count(const unsigned int count);
         void add_client(Client* client);
         void remove_client(Client* client);
 
@@ -60,8 +60,8 @@ class Channel {
         void add_invited_client(Client* client);
 
         /*----------------------mode----------------------*/
-        void add_channel_mode(std::string mode);
-        void remove_channel_mode(std::string mode);
+        void add_channel_mode(const std::string &mode);
+        void remove_channel_mode(const std::string &mode);
 
         std::string get_channel_params() const;
         std::string get_channel_generated_time() const;
