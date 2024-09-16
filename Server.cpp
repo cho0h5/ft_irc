@@ -132,6 +132,7 @@ void Server::register_client(const int fd) {
 void Server::remove_client(const int fd) {
     for (std::map<std::string, Channel>::iterator it = channels.begin(); it != channels.end(); it++) {
         it->second.remove_client(&clients_fd[fd]);
+        it->second.remove_operator(&clients_fd[fd]);
     }
     clients_nickname.erase(clients_fd[fd].get_nickname());
     clients_fd.erase(fd);
