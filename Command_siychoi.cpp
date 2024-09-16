@@ -86,6 +86,7 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 
 	// 4. add mode, itkol
 	unsigned int args_idx = 3, args_size = cmds.size();
+	std::vector<std::string> success_cmds(1, "");
 	
 	// unknown mode char : ERR_UNKNOWNMODE, 472
 	if (!is_right_mode(cmds[2])) {
@@ -94,6 +95,7 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 	}
 
 	if (cmds[2][0] == '+') {
+		success_cmds[0] = "+";
 		for (size_t i = 1; i < cmds[2].size(); i++) {
 
 			// add invite only
@@ -102,6 +104,7 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 					continue;
 				channel.add_channel_mode("i");
 				channel.set_option_i();
+				success_cmds[0] += "i";
 			}
 			// add topic restrict
 			else if (cmds[2][i] == 't') {
@@ -109,6 +112,7 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 					continue;
 				channel.add_channel_mode("t");
 				channel.set_option_t();
+				success_cmds[0] += "t";
 			}
 			// add/change key
 			else if (cmds[2][i] == 'k') {
@@ -118,7 +122,9 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 					continue;
 				}
 				channel.add_channel_mode("k");
-				channel.set_channel_key(cmds[args_idx++]);
+				channel.set_channel_key(cmds[args_idx]);
+				success_cmds[0] += "k";
+				success_cmds.push_back(cmds[args_idx++]);
 			}
 			// add limit
 			else if (cmds[2][i] == 'l') {
@@ -135,6 +141,8 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 					continue;
 				}
 				channel.set_channel_users_limit(limit);
+				success_cmds[0] += "l";
+				success_cmds.push_back(std::to_string(limit));
 			}
 			
 			// add operator, TODO : 여러 명 한 번에 지원할 수 있는 서버도 있다던데 우린 한 명씩만 하는 거로 할까..?
@@ -160,10 +168,12 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 				}
 				channel.add_operator(clients_nickname[cmds[args_idx++]]);
 			}
+
 		}
 	}
 	// 4. remove mode, itkol
 	else if (cmds[2][0] == '-') {
+		success_cmds[0] = "-";
 		for (size_t i = 1; i < cmds[2].size(); i++) {
 			// remove invite only
 			if (cmds[2][i] == 'i') {
@@ -171,6 +181,7 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 					continue;
 				channel.unset_option_i();
 				channel.remove_channel_mode("i");
+				success_cmds[0] += "i";
 			}
 			// remove topic restrict
 			else if (cmds[2][i] == 't') {
@@ -178,16 +189,19 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 					continue;
 				channel.unset_option_t();
 				channel.remove_channel_mode("t");
+				success_cmds[0] += "t";
 			}
 			// remove key
 			else if (cmds[2][i] == 'k') {
 				channel.remove_channel_mode("k");
 				channel.set_channel_key("");
+				success_cmds[0] += "k";
 			}
 			// remove limit
 			else if (cmds[2][i] == 'l') {
 				channel.remove_channel_mode("l");
 				channel.set_channel_users_limit(500);
+				success_cmds[0] += "l";
 			}
 			// remove operator -> 서버에 따라 operator 옵션을 안 보여줘도 됨, 우린 이렇게 간다
 			else if (cmds[2][i] == 'o') {
