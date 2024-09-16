@@ -113,10 +113,10 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
             channels[channel_name].add_client(&clients_fd[fd]);
             channels[channel_name].add_operator(&clients_fd[fd]);
             clients_fd[fd].send_message(clients_fd[fd].get_identifier(), "JOIN " + channel_name);
-            clients_fd[fd].send_message(get_servername(), "MODE " + channel_name + " +Cnst");
+            clients_fd[fd].send_message(get_servername(), "MODE " + channel_name + " +t");
             clients_fd[fd].send_message(get_servername(), "353 " + clients_fd[fd].get_nickname() + " @ " + channel_name + " :@" + clients_fd[fd].get_nickname());
             clients_fd[fd].send_message(get_servername(), "366 " + clients_fd[fd].get_nickname() + " " + channel_name + " :End of /NAMES list");
-            channels[channel_name].add_channel_mode("Cnst");
+            channels[channel_name].add_channel_mode("t");
             continue;
         }
     
