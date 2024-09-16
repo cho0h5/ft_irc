@@ -64,7 +64,7 @@ class Channel {
         void remove_channel_mode(std::string mode);
 
         std::string get_channel_params();
-        std::string get_channel_genrated_time();
+        std::string get_channel_generated_time();
         /*----------------------message----------------------*/
         void send_message(const Client &client, const std::string &message) const;
 

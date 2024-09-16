@@ -80,7 +80,7 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 	// show channel mode info
 	if (cmds.size() == 2) {
 		clients_fd[fd].send_message(get_servername(), "324 " + clients_fd[fd].get_nickname() + " " + channel.get_name() + " " + channel.get_channel_mode() + " " + channel.get_channel_params());
-		clients_fd[fd].send_message(get_servername(), "329 " + clients_fd[fd].get_nickname() + " " + channel.get_name() + " " + channel.get_channel_genrated_time());
+		clients_fd[fd].send_message(get_servername(), "329 " + clients_fd[fd].get_nickname() + " " + channel.get_name() + " " + channel.get_channel_generated_time());
 		return ;
 	}
 
