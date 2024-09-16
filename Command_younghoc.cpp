@@ -119,23 +119,23 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
             channels[channel_name].add_channel_mode("t");
             continue;
         }
-    
+
         Channel& channel = iter->second;
         // incorrect key : ERR_BADCHANNELKEY, 475
         if (keys[i] != channel.get_key()) {
-            clients_fd[fd].send_message(get_servername(), Error::err_badchannelkey(clients_fd[fd].get_nickname(), channel.get_name())); 
+            clients_fd[fd].send_message(get_servername(), Error::err_badchannelkey(clients_fd[fd].get_nickname(), channel.get_name()));
             continue;
         }
 
         // channel is full : ERR_CHANNELISFULL, 471
         if (channel.get_current_users_count() == channel.get_users_limit()) {
-            clients_fd[fd].send_message(get_servername(), Error::err_channelisfull(clients_fd[fd].get_nickname(), channel.get_name())); 
+            clients_fd[fd].send_message(get_servername(), Error::err_channelisfull(clients_fd[fd].get_nickname(), channel.get_name()));
             continue;
         }
 
         // invite only : ERR_INVITEONLYCHAN, 473
         if (channel.get_option_invite_only() && channel.get_invited_client(clients_fd[fd].get_nickname()) == NULL) {
-            clients_fd[fd].send_message(get_servername(), Error::err_inviteonlychan(clients_fd[fd].get_nickname(), channel.get_name())); 
+            clients_fd[fd].send_message(get_servername(), Error::err_inviteonlychan(clients_fd[fd].get_nickname(), channel.get_name()));
             continue;
         }
 
@@ -203,7 +203,7 @@ void Server::command_topic(const int fd, const std::vector<std::string> &cmds) {
         clients_fd[fd].send_message(get_servername(), "332 " + clients_fd[fd].get_nickname() + " " + channel.get_name() + " :" + channel.get_topic());
         return;
     }
-    
+
     // set topic
     if (iter->second.get_option_topic_restrict() && iter->second.get_operator(clients_fd[fd].get_nickname()) == NULL) {
         // not channel operator : ERR_CHANOPRIVSNEEDED, 482
@@ -280,7 +280,7 @@ void Server::command_kick(const int fd, std::vector<std::string> &cmds) {
         clients_fd[fd].send_message(get_servername(), Error::err_notregistered());
         return;
     }
-    
+
     // not enough parameters : ERR_NEEDMOREPARAMS, 461
     if (cmds.size() < 3) {
         clients_fd[fd].send_message(get_servername(), Error::err_needmoreparams(cmds[0]));
@@ -311,7 +311,7 @@ void Server::command_kick(const int fd, std::vector<std::string> &cmds) {
         clients_fd[fd].send_message(get_servername(), Error::err_chanoprivsneeded(clients_fd[fd].get_nickname(), cmds[1]));
         return;
     }
-    
+
     std::vector<std::string> kicked_nicknames;
     if (cmds[2].find(',') == std::string::npos) {
         kicked_nicknames.push_back(cmds[2]);
@@ -346,7 +346,7 @@ void Server::command_kick(const int fd, std::vector<std::string> &cmds) {
         std::map<std::string, Client*> joined_users = channel.get_clients();
         for (std::map<std::string, Client*>::iterator iter = joined_users.begin(); iter != joined_users.end(); iter++)
             iter->second->send_message(get_servername(), "KICK " + channel.get_name() + " " + kicked_client->first + reason);
-        
+
         if (channel.get_operator(kicked_client->first) != NULL)
             channel.remove_operator(kicked_client->second);
         channel.remove_client(kicked_client->second);
