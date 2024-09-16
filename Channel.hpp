@@ -9,11 +9,7 @@
 class Channel {
     public:
         Channel();
-        Channel(std::string name);
-
-        void    kick(Client* client);
-        void    invite(Client* client);
-        void    topic(Client* client, const std::string &topic);
+        Channel(const std::string &name);
 
         void    set_option_i();
         void    set_option_t();

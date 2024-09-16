@@ -12,7 +12,7 @@ Channel::Channel() : channel_mode("+") {
 
     channel_generated_time = std::to_string(unix_timestamp);
 }
-Channel::Channel(std::string name) : channel_mode("+") {
+Channel::Channel(const std::string &name) : channel_mode("+") {
     channel_name = name;
     is_invite_only = false;
     is_topic_restrict = true;
