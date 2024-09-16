@@ -39,7 +39,7 @@ private:
 	int create_kqueue();
     void set_kqueue_write_event();
 	int open_server();
-	void add_event(uintptr_t ident, int16_t filter, uint16_t flags);
+	void add_event(const uintptr_t ident, const int16_t filter, const uint16_t flags);
 
 	void register_client(const int fd);
 	void remove_client(const int fd);

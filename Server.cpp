@@ -72,7 +72,7 @@ int Server::run() {
 	}
 }
 
-void Server::add_event(uintptr_t ident, int16_t filter, uint16_t flags) {
+void Server::add_event(const uintptr_t ident, const int16_t filter, const uint16_t flags) {
 	struct kevent event;
 
 	EV_SET(&event, ident, filter, flags, 0, 0, 0);
