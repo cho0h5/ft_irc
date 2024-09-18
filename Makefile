@@ -10,7 +10,7 @@ SRCS = main.cpp				\
 	   Command_siychoi.cpp	\
 	   Command_younghoc.cpp
 OBJS = $(SRCS:.cpp=.o)
-CFLAGS = -Wall -Werror -Wextra -std=c++98
+CFLAGS = -Wall -Werror -Wextra -std=c++98 -fsanitize=address -g
 
 all: $(NAME)
 
