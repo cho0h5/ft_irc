@@ -69,14 +69,7 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 		return;
 	}
 
-	// 5. not channel operator : ERR_CHANOPRIVSNEEDED, 482
-	if (iter->second.get_operator(clients_fd[fd].get_nickname()) == NULL) {
-        clients_fd[fd].send_message(get_servername(), Error::err_chanoprivsneeded(clients_fd[fd].get_nickname(), cmds[1]));
-        return;
-    }
-
 	Channel& channel = iter->second;
-
 	// show channel mode info
 	if (cmds.size() == 2) {
 		clients_fd[fd].send_message(get_servername(), "324 " + clients_fd[fd].get_nickname() + " " + channel.get_name() + " " + channel.get_channel_mode() + " " + channel.get_channel_params());
@@ -84,10 +77,16 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 		return ;
 	}
 
+	// 5. not channel operator : ERR_CHANOPRIVSNEEDED, 482
+	if (iter->second.get_operator(clients_fd[fd].get_nickname()) == NULL) {
+        clients_fd[fd].send_message(get_servername(), Error::err_chanoprivsneeded(clients_fd[fd].get_nickname(), cmds[1]));
+        return;
+    }
+
 	// 4. add mode, itkol
 	unsigned int args_idx = 3, args_size = cmds.size();
 	std::vector<std::string> success_cmds(1, "");
-	
+
 	// unknown mode char : ERR_UNKNOWNMODE, 472
 	if (!is_right_mode(cmds[2])) {
 		clients_fd[fd].send_message(get_servername(), Error::err_unknownmode(clients_fd[fd].get_nickname(), cmds[2]));
@@ -144,7 +143,7 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 				success_cmds[0] += "l";
 				success_cmds.push_back(std::to_string(limit));
 			}
-			
+
 			// add operator, TODO : 여러 명 한 번에 지원할 수 있는 서버도 있다던데 우린 한 명씩만 하는 거로 할까..?
 			else if (cmds[2][i] == 'o') {
 				// not enough parameters : ERR_NEEDMOREPARAMS, 461
