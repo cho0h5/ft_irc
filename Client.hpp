@@ -24,7 +24,7 @@ class Client {
         void set_is_registered();
 
         int read_handler(Server *server);
-        void write_handler();
+        int write_handler();
 
         bool is_write_buffer_empty() const;
         void send_message(const std::string &sender, const std::string &message);

@@ -74,9 +74,15 @@ int Client::read_handler(Server *server) {
     return 0;
 }
 
-void Client::write_handler() {
+int Client::write_handler() {
     const ssize_t n = write(fd, write_buffer.c_str(), write_buffer.size());
     write_buffer.erase(0, n);
+
+    if (n <= 0) {
+		return -1;
+	} else {
+	    return 0;
+	}
 }
 
 bool Client::is_write_buffer_empty() const {

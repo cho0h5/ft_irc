@@ -67,7 +67,11 @@ int Server::run() {
 				    remove_client(event.ident);
 				}
 			} else if (event.filter == EVFILT_WRITE) {
-			    clients_fd[event.ident].write_handler();
+			    const int ret = clients_fd[event.ident].write_handler();
+
+    			if (ret) {
+    			    remove_client(event.ident);
+    			}
 			}
 		}
 	}
