@@ -33,7 +33,7 @@ std::string Error::err_erroneusnickname(const std::string &wrong_nickname) {
 }
 
 std::string Error::err_nicknameinuse(const std::string &wrong_nickname) {
-    return "433 * " + wrong_nickname + " :";
+    return "433 * " + wrong_nickname + " :Nickname is already in use";
 }
 
 std::string Error::err_usernotinchannel(const std::string &nickname, const std::string &user, const std::string &channel) {
