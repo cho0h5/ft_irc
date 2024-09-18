@@ -72,11 +72,6 @@ void Server::command_user(const int fd, const std::vector<std::string> &cmds) {
         return;
     }
 
-    // username contains space, but not prefixed with colon : 무슨 에러징...
-    if (cmds[5].find(" ") != std::string::npos && cmds[5][0] != ':') {
-        clients_fd[fd].send_message(get_servername(), Error::err_needmoreparams(cmds[0]));
-        return;
-    }
     // change username
     it->second.set_username(cmds[1]);
     it->second.set_realname(cmds[4]);   // TODO: 이름 유효성 검사 해야함

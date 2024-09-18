@@ -1,3 +1,4 @@
+#include <iterator>
 #include <sys/event.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -154,7 +155,6 @@ void Server::prune_channel() {
 
 void Server::command_parsing(const int fd, const std::string &command) {
     const std::string Commands[] = {"NICK", "USER", "PRIVMSG", "JOIN", "MODE", "TOPIC", "KICK", "INVITE" };
-    std::stringstream ss(command);
     std::string exec_cmd, token;
     std::vector<std::string> tokens;
 
@@ -174,17 +174,18 @@ void Server::command_parsing(const int fd, const std::string &command) {
     }
 
     // tokenize
-    bool trailing = false;
+    const size_t pos = command.find(':');
+    std::string before_colon = command;
+    if (pos != std::string::npos) {
+        before_colon = command.substr(0, pos);
+    }
+    std::stringstream ss(before_colon);
     while (ss >> token) {
-        if (!trailing) {
-            tokens.push_back(token);
-            if (token.at(0) == ':') {
-                tokens.back().erase(0, 1);
-                trailing = true;
-            }
-        } else {
-            tokens.back().append(" " + token);
-        }
+        tokens.push_back(token);
+    }
+    if (pos != std::string::npos) {
+        const std::string after_colon = command.substr(pos + 1);
+        tokens.push_back(after_colon);
     }
 
     if (exec_cmd == "NICK") {
