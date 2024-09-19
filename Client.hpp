@@ -17,11 +17,13 @@ class Client {
         std::string get_hostname() const;
         std::string get_identifier() const;
         bool get_is_registered() const;
+        bool get_is_authorized() const;
         void set_nickname(const std::string &nickname);
         void set_username(const std::string &username);
         void set_realname(const std::string &realname);
         void set_hostname(const std::string &hostname);
         void set_is_registered();
+        void set_is_authorized();
 
         int read_handler(Server *server);
         int write_handler();
@@ -39,6 +41,7 @@ class Client {
         std::string hostname;
 
         bool is_registered;
+        bool is_authorized;
 
         std::string read_buffer;
         std::string write_buffer;

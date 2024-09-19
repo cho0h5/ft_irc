@@ -45,6 +45,7 @@ private:
 
 	void prune_channel();
 
+	void command_pass(const int fd, const std::vector<std::string> &cmds);
 	void command_nick(const int fd, const std::vector<std::string> &cmds);
 	void command_user(const int fd, const std::vector<std::string> &cmds);
 	void command_privmsg(const int fd, const std::vector<std::string> &cmds);

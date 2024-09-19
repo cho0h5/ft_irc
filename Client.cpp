@@ -3,10 +3,10 @@
 #include <unistd.h>
 #include <iostream>
 
-Client::Client() : is_registered(false) {
+Client::Client() : is_registered(false), is_authorized(false) {
 }
 
-Client::Client(const int fd, const std::string &ip) : fd(fd), hostname(ip), is_registered(false) {
+Client::Client(const int fd, const std::string &ip) : fd(fd), hostname(ip), is_registered(false), is_authorized(false) {
 }
 
 int Client::get_fd() const {
@@ -37,6 +37,10 @@ bool Client::get_is_registered() const {
     return is_registered;
 }
 
+bool Client::get_is_authorized() const {
+    return is_authorized;
+}
+
 void Client::set_nickname(const std::string &nickname) {
     this->nickname = nickname;
 }
@@ -55,6 +59,10 @@ void Client::set_hostname(const std::string &hostname) {
 
 void Client::set_is_registered() {
     is_registered = true;
+}
+
+void Client::set_is_authorized() {
+    is_authorized = true;
 }
 
 int Client::read_handler(Server *server) {

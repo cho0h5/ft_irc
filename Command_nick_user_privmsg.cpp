@@ -6,6 +6,11 @@
 #include <string>
 #include <vector>
 
+void Server::command_pass(const int fd, const std::vector<std::string> &cmds) {
+    (void)fd;
+    (void)cmds;
+}
+
 // NICK <new_nickname>
 // TODO : client 객체 생성 시 nickname 임의로 지정
 void Server::command_nick(const int fd, const std::vector<std::string> &cmds) {
