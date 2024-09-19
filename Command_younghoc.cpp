@@ -152,7 +152,7 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
 
         if (!iter->second.get_topic().empty()) {
             Channel& channel = iter->second;
-            clients_fd[fd].send_message(get_servername(), "332 " + clients_fd[fd].get_nickname() + " " + channel.get_name() + " :" + channel.get_topic());
+            clients_fd[fd].send_message(get_servername(), "332 " + clients_fd[fd].get_nickname() + " " + channel.get_name() + " :" + channel.get_channel_topic_set_time());
         }
 
         joined_users = channel.get_clients();
