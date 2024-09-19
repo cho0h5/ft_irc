@@ -1,7 +1,7 @@
 #include "Error.hpp"
 #include "Server.hpp"
 #include "Client.hpp"
-
+#include <sstream>
 //1. mode인지 확인
 //2. parameter 있는지 확인(461)
 //3. 채널명확인 (403)
@@ -141,7 +141,9 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 				}
 				channel.set_channel_users_limit(limit);
 				success_cmds[0] += "l";
-				success_cmds.push_back(std::to_string(limit));
+				std::stringstream ss;
+				ss << limit;
+				success_cmds.push_back(ss.str());
 			}
 
 			// add operator, TODO : 여러 명 한 번에 지원할 수 있는 서버도 있다던데 우린 한 명씩만 하는 거로 할까..?
