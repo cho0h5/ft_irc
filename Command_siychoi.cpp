@@ -162,7 +162,8 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 					continue;
 				}
 				// already operator
-				if (channel.get_operator(cmds[args_idx++]) != NULL) {
+				if (channel.get_operator(cmds[args_idx]) != NULL) {
+				    args_idx += 1;
 					continue;
 				}
 				channel.add_operator(clients_nickname[cmds[args_idx++]]);
