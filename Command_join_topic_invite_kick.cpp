@@ -168,7 +168,7 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
     }
 }
 
-
+#include <iostream>
 void Server::command_topic(const int fd, const std::vector<std::string> &cmds) {
     if (!clients_fd[fd].get_is_registered()) {
         clients_fd[fd].send_message(get_servername(), Error::err_notregistered());
@@ -219,6 +219,7 @@ void Server::command_topic(const int fd, const std::vector<std::string> &cmds) {
         return;
     }
     iter->second.set_channel_topic(cmds[2]);
+    std::cout << "topic: " << iter->second.get_topic() << std::endl;
     iter->second.set_channel_topic_set_member(clients_fd[fd].get_identifier());
     iter->second.set_channel_topic_set_time();
 

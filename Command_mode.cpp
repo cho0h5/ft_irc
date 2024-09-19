@@ -153,8 +153,9 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 				    args_idx += 1;
 					continue;
 				}
+				channel.add_operator(clients_nickname[cmds[args_idx]]);
 				success_cmds[0] += "o";
-				channel.add_operator(clients_nickname[cmds[args_idx++]]);
+				success_cmds.push_back(cmds[args_idx++]);
 			}
 		}
 	}
@@ -210,10 +211,13 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 				}
 				// not channel operator : ERR_CHANOPRIVSNEEDED, 482
 				if (channel.get_operator(it->second) == NULL) {
-					// clients_fd[fd].send_message(get_servername(), Error::err_chanoprivsneeded(clients_fd[fd].get_nickname(), cmds[args_idx++]));
+					clients_fd[fd].send_message(get_servername(), Error::err_chanoprivsneeded(clients_fd[fd].get_nickname(), cmds[args_idx++]));
 					continue;
 				}
-				channel.remove_operator(clients_nickname[cmds[args_idx++]]);
+				channel.remove_operator(clients_nickname[cmds[args_idx]]);
+				success_cmds[0] += "o";
+				success_cmds.push_back(cmds[args_idx++]);
+
 			}
 		}
 	}
