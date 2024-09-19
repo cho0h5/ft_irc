@@ -147,6 +147,12 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
         channel.set_current_users_count(channel.get_current_users_count() + 1);
 
         clients_fd[fd].send_message(clients_fd[fd].get_identifier(), "JOIN " + channel.get_name());
+
+        if (!iter->second.get_topic().empty()) {
+            Channel& channel = iter->second;
+            clients_fd[fd].send_message(get_servername(), "332 " + clients_fd[fd].get_nickname() + " " + channel.get_name() + " :" + channel.get_topic());
+        }
+
         joined_users = channel.get_clients();
         std::set<Client*> joined_operators = channel.get_operators();
         std::string joined_users_str = "";
