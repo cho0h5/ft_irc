@@ -325,7 +325,7 @@ void Server::command_kick(const int fd, std::vector<std::string> &cmds) {
     }
     std::string reason = "";
     if (cmds.size() == 4)
-        reason = " :" + cmds[4];
+        reason = " :" + cmds[3];
 
     for (size_t i = 0; i < kicked_nicknames.size(); i++) {
         std::map<std::string, Client*>::iterator kicked_client = clients_nickname.find(kicked_nicknames[i]);
