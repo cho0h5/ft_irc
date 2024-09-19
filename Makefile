@@ -6,9 +6,9 @@ SRCS = main.cpp				\
 	   Client.cpp			\
 	   Channel.cpp			\
 	   Error.cpp			\
-	   Command_hyowchoi.cpp	\
-	   Command_siychoi.cpp	\
-	   Command_younghoc.cpp
+	   Command_join_topic_invite_kick.cpp	\
+	   Command_mode.cpp	\
+	   Command_nick_user_privmsg.cpp
 OBJS = $(SRCS:.cpp=.o)
 CFLAGS = -Wall -Werror -Wextra -std=c++98 -fsanitize=address -g
 
