@@ -169,7 +169,7 @@ void Server::prune_channel() {
 }
 
 void Server::command_parsing(const int fd, const std::string &command) {
-    const std::string Commands[] = {"NICK", "USER", "PRIVMSG", "JOIN", "MODE", "TOPIC", "KICK", "INVITE" };
+    const std::string Commands[] = {"PASS", "NICK", "USER", "PRIVMSG", "JOIN", "MODE", "TOPIC", "KICK", "INVITE" };
     std::string exec_cmd, token;
     std::vector<std::string> tokens;
 
@@ -203,7 +203,9 @@ void Server::command_parsing(const int fd, const std::string &command) {
         tokens.push_back(after_colon);
     }
 
-    if (exec_cmd == "NICK") {
+    if (exec_cmd == "PASS") {
+        command_pass(fd, tokens);
+    } else if (exec_cmd == "NICK") {
         command_nick(fd, tokens);
     } else if (exec_cmd == "USER") {
         command_user(fd, tokens);

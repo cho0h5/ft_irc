@@ -7,8 +7,32 @@
 #include <vector>
 
 void Server::command_pass(const int fd, const std::vector<std::string> &cmds) {
-    (void)fd;
-    (void)cmds;
+    if (cmds[0] != "PASS") {
+        return;
+    }
+
+    if (cmds.size() < 2) {
+        clients_fd[fd].send_message(get_servername(), Error::err_needmoreparams(cmds[0]));
+        return;
+    }
+
+    if (clients_fd[fd].get_is_authorized() && !clients_fd[fd].get_is_registered()) {
+        return;
+    }
+
+    const std::string nickname = clients_fd[fd].get_nickname();
+    if (clients_fd[fd].get_is_registered()) {
+        clients_fd[fd].send_message(get_servername(), Error::err_alreadyregistered(nickname));
+        return;
+    }
+
+    const std::string entered_password = cmds[1];
+    if (entered_password != server_password) {
+        clients_fd[fd].send_message(get_servername(), Error::err_passwdmismatch());
+        return;
+    }
+
+    clients_fd[fd].set_is_authorized();
 }
 
 // NICK <new_nickname>

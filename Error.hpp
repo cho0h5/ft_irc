@@ -63,6 +63,9 @@ class Error {
     // :calcium.libera.chat 462 younghoc :You are already connected and cannot handshake again
     static std::string err_alreadyregistered(const std::string &nickname); // 462
 
+    // <client> :Password incorrect
+    static std::string err_passwdmismatch();    // 464
+
     // <client> <channel> :Cannot join channel (+l)
     // :server_name 471 <nickname> <channel_name> :Cannot join channel (+l) - channel is full
     static std::string err_channelisfull(const std::string &nickname, const std::string &channel_name); // 471

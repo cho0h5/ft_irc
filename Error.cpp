@@ -61,6 +61,10 @@ std::string Error::err_alreadyregistered(const std::string &nickname) {
     return "462 " + nickname + " :You may not reregister";
 }
 
+std::string Error::err_passwdmismatch() {
+    return "464 * :Password incorrect";
+}
+
 std::string Error::err_channelisfull(const std::string &nickname, const std::string &channel_name) {
     return "471 " + nickname + " " + channel_name + " :Cannot join channel (+l) - channel is full";
 }
