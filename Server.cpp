@@ -159,7 +159,8 @@ void Server::remove_client(const int fd) {
 void Server::prune_channel() {
     for (std::map<std::string, Channel>::const_iterator it = channels.begin(); it != channels.end(); ) {
         if (it->second.get_clients().empty()) {
-            it = channels.erase(it);
+			std::map<std::string, Channel>::const_iterator to_erase = it++;
+            channels.erase(to_erase);
         } else {
             it++;
         }

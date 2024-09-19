@@ -1,7 +1,8 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
-#include <cstdint>
+#include <cstdlib>
+#include <cstdio>
 #include <vector>
 #include <map>
 #include <sys/event.h>
