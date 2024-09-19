@@ -47,7 +47,7 @@ int Server::run() {
 		changelist.clear();
 
 		if (nev < 0) {
-    		perror("fcntl set");
+			std::cout << "error\n";
 			exit(EXIT_FAILURE);
 		}
 
@@ -55,7 +55,7 @@ int Server::run() {
 			const struct kevent event = eventlist[i];
 
 			if (event.flags & EV_ERROR) {
-				perror("kqueue");
+				std::cout << "error\n";
 				exit(EXIT_FAILURE);
 			} else if (event.ident == server_socket_fd) {
 				struct sockaddr_in client_addr;
