@@ -26,6 +26,17 @@ Channel::Channel(const std::string &name) : channel_mode("+") {
     channel_generated_time = std::to_string(unix_timestamp);
 }
 
+void Channel::set_channel_topic_set_time() {
+    std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+    std::time_t unix_timestamp = std::chrono::system_clock::to_time_t(now);
+
+    channel_topic_set_time = std::to_string(unix_timestamp);
+}
+
+std::string Channel::get_channel_topic_set_time() const {
+    return channel_topic_set_time;
+}
+
 std::set<Client*> Channel::get_clients() const {
     return clients;
 }

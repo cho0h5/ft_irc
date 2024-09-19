@@ -61,6 +61,9 @@ class Channel {
 
         std::string get_channel_params() const;
         std::string get_channel_generated_time() const;
+
+        void set_channel_topic_set_time();
+        std::string get_channel_topic_set_time() const;
         /*----------------------message----------------------*/
         void send_message(const Client &client, const std::string &message) const;
 
@@ -80,6 +83,7 @@ class Channel {
 
         std::string channel_mode;
         std::string channel_generated_time;
+        std::string channel_topic_set_time;
 };
 
 #endif
