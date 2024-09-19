@@ -169,6 +169,7 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 				    args_idx += 1;
 					continue;
 				}
+				success_cmds[0] += "o";
 				channel.add_operator(clients_nickname[cmds[args_idx++]]);
 			}
 		}
