@@ -1,6 +1,6 @@
 #include "Channel.hpp"
 #include "Client.hpp"
-#include <chrono>
+#include <ctime>
 
 Channel::Channel() : channel_mode("+") {
     is_invite_only = false;
@@ -8,10 +8,13 @@ Channel::Channel() : channel_mode("+") {
     channel_users_limit = 500;
     current_users_count = 1;
 
-    std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
-    std::time_t unix_timestamp = std::chrono::system_clock::to_time_t(now);
+    // std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+    // std::time_t unix_timestamp = std::chrono::system_clock::to_time_t(now);
 
-    channel_generated_time = std::to_string(unix_timestamp);
+    std::time_t now = std::time(0); // 현재 시간 (Unix 타임스탬프)
+    std::string channel_generated_time = std::to_string(now); // 타임스탬프를 문자열로 변환
+
+    // channel_generated_time = std::to_string(unix_timestamp);
 }
 Channel::Channel(const std::string &name) : channel_mode("+") {
     channel_name = name;
@@ -20,17 +23,23 @@ Channel::Channel(const std::string &name) : channel_mode("+") {
     channel_users_limit = 500;
     current_users_count = 1;
 
-    std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
-    std::time_t unix_timestamp = std::chrono::system_clock::to_time_t(now);
+    // std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+    // std::time_t unix_timestamp = std::chrono::system_clock::to_time_t(now);
 
-    channel_generated_time = std::to_string(unix_timestamp);
+    std::time_t now = std::time(0); // 현재 시간 (Unix 타임스탬프)
+    std::string channel_generated_time = std::to_string(now); // 타임스탬프를 문자열로 변환
+
+    // channel_generated_time = std::to_string(unix_timestamp);
 }
 
 void Channel::set_channel_topic_set_time() {
-    std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
-    std::time_t unix_timestamp = std::chrono::system_clock::to_time_t(now);
+    // std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+    // std::time_t unix_timestamp = std::chrono::system_clock::to_time_t(now);
 
-    channel_topic_set_time = std::to_string(unix_timestamp);
+    std::time_t now = std::time(0); // 현재 시간 (Unix 타임스탬프)
+    std::string channel_topic_set_time = std::to_string(now); // 타임스탬프를 문자열로 변환
+
+    // channel_topic_set_time = std::to_string(unix_timestamp);
 }
 
 std::string Channel::get_channel_topic_set_time() const {
