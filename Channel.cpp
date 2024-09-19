@@ -9,15 +9,13 @@ Channel::Channel() : channel_mode("+") {
     channel_users_limit = 500;
     current_users_count = 1;
 
-    // std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
-    // std::time_t unix_timestamp = std::chrono::system_clock::to_time_t(now);
-
-    std::time_t now = std::time(0); // 현재 시간 (Unix 타임스탬프)
+    std::time_t now = std::time(0);
 
     std::stringstream ss;
     ss << now;
-    std::string channel_generated_time = ss.str();
+    channel_generated_time = ss.str();
 }
+
 Channel::Channel(const std::string &name) : channel_mode("+") {
     channel_name = name;
     is_invite_only = false;
@@ -25,26 +23,18 @@ Channel::Channel(const std::string &name) : channel_mode("+") {
     channel_users_limit = 500;
     current_users_count = 1;
 
-    // std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
-    // std::time_t unix_timestamp = std::chrono::system_clock::to_time_t(now);
-
-    std::time_t now = std::time(0); // 현재 시간 (Unix 타임스탬프)
-
+    std::time_t now = std::time(0);
     std::stringstream ss;
     ss << now;
-    std::string channel_generated_time = ss.str();
-
+    channel_generated_time = ss.str();
 }
 
 void Channel::set_channel_topic_set_time() {
-    // std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
-    // std::time_t unix_timestamp = std::chrono::system_clock::to_time_t(now);
-
-    std::time_t now = std::time(0); // 현재 시간 (Unix 타임스탬프)
+    std::time_t now = std::time(0);
     
     std::stringstream ss;
     ss << now;
-    std::string channel_topic_set_time = ss.str();
+    channel_topic_set_time = ss.str();
 }
 
 std::string Channel::get_channel_topic_set_time() const {
