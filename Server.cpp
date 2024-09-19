@@ -4,6 +4,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <cstring>
 #include <iostream>
 #include <sstream>
 #include "Server.hpp"
@@ -19,7 +20,7 @@ static void set_nonblocking(const int sockfd) {
 }
 
 Server::Server(char* port, std::string password) : server_password(password) {
-	if (std::strlen(port) > 6 || std::atoi(port) < 1024) {
+	if (std::string(port).size() > 6 || std::atoi(port) >= 65536 || std::atoi(port) < 0) {
 		std::cout << "error\n";
 		exit(EXIT_FAILURE);
 	}
@@ -157,9 +158,9 @@ void Server::remove_client(const int fd) {
 }
 
 void Server::prune_channel() {
-    for (std::map<std::string, Channel>::const_iterator it = channels.begin(); it != channels.end(); ) {
+    for (std::map<std::string, Channel>::iterator it = channels.begin(); it != channels.end(); ) {
         if (it->second.get_clients().empty()) {
-			std::map<std::string, Channel>::const_iterator to_erase = it++;
+			std::map<std::string, Channel>::iterator to_erase = it++;
             channels.erase(to_erase);
         } else {
             it++;
