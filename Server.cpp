@@ -196,6 +196,8 @@ void Server::command_parsing(const int fd, const std::string &command) {
 
     if (exec_cmd == "PASS") {
         command_pass(fd, tokens);
+    } else if (!clients_fd[fd].get_is_authorized()) {
+        clients_fd[fd].send_message(get_servername(), Error::err_passwdmismatch());
     } else if (exec_cmd == "NICK") {
         command_nick(fd, tokens);
     } else if (exec_cmd == "USER") {
