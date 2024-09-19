@@ -1,4 +1,5 @@
 #include "Channel.hpp"
+#include "Client.hpp"
 #include <chrono>
 
 Channel::Channel() : channel_mode("+") {
@@ -25,37 +26,37 @@ Channel::Channel(const std::string &name) : channel_mode("+") {
     channel_generated_time = std::to_string(unix_timestamp);
 }
 
-std::map<std::string, Client*> Channel::get_clients() const {
+std::set<Client*> Channel::get_clients() const {
     return clients;
 }
 
-std::map<std::string, Client*> Channel::get_operators() const {
+std::set<Client*> Channel::get_operators() const {
     return operators;
 }
 
 
-Client* Channel::get_client(const std::string &client_nickname) const {
-    std::map<std::string, Client*>::const_iterator it = clients.find(client_nickname);
+Client* Channel::get_client(Client *client) const {
+    std::set<Client*>::const_iterator it = clients.find(client);
     if (it == clients.end()) {
         return NULL;
     }
-    return it->second;
+    return *it;
 }
 
-Client* Channel::get_operator(const std::string &operator_nickname) const {
-    std::map<std::string, Client*>::const_iterator it = operators.find(operator_nickname);
+Client* Channel::get_operator(Client *op) const {
+    std::set<Client*>::const_iterator it = operators.find(op);
     if (it == operators.end()) {
         return NULL;
     }
-    return it->second;
+    return *it;
 }
 
-Client* Channel::get_invited_client(const std::string &operator_nickname) const {
-    std::map<std::string, Client*>::const_iterator it = invited_clients.find(operator_nickname);
+Client* Channel::get_invited_client(Client *invited) const {
+    std::set<Client*>::const_iterator it = invited_clients.find(invited);
     if (it == invited_clients.end()) {
         return NULL;
     }
-    return it->second;
+    return *it;
 }
 
 
@@ -101,42 +102,44 @@ void Channel::set_current_users_count(unsigned int count) {
 }
 
 void Channel::add_client(Client* client) {
-    clients[client->get_nickname()] = client;
-}
-
-void Channel::remove_client(const Client* client) {
     if (client == NULL)
         return;
-    clients.erase(client->get_nickname());
+    clients.insert(client);
+}
+
+void Channel::remove_client(Client* client) {
+    if (client == NULL)
+        return;
+    clients.erase(client);
 }
 
 void Channel::add_operator(Client* client) {
     if (client == NULL)
         return;
-    operators[client->get_nickname()] = client;
+    operators.insert(client);
 }
 
-void Channel::remove_operator(const Client* client) {
+void Channel::remove_operator(Client* client) {
     if (client == NULL)
         return;
-    operators.erase(client->get_nickname());
+    operators.erase(client);
 }
 
 void Channel::add_invited_client(Client* client) {
     if (client == NULL)
         return;
-    invited_clients[client->get_nickname()] = client;
+    invited_clients.insert(client);
 }
 
 void Channel::send_message(const Client &client, const std::string &message) const {
     const std::string sender_identifier = client.get_identifier();
 
-    for (std::map<std::string, Client*>::const_iterator it = clients.begin(); it != clients.end(); it++) {
-        if (it->second->get_fd() == client.get_fd()) {   // 송신자에게는 보내지 않음
+    for (std::set<Client*>::const_iterator it = clients.begin(); it != clients.end(); it++) {
+        if ((*it)->get_fd() == client.get_fd()) {   // 송신자에게는 보내지 않음
             continue;
         }
 
-        it->second->send_message(sender_identifier, message);
+        (*it)->send_message(sender_identifier, message);
     }
 }
 

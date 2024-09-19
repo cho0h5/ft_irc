@@ -78,7 +78,7 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 	}
 
 	// 5. not channel operator : ERR_CHANOPRIVSNEEDED, 482
-	if (iter->second.get_operator(clients_fd[fd].get_nickname()) == NULL) {
+	if (iter->second.get_operator(&clients_fd[fd]) == NULL) {
         clients_fd[fd].send_message(get_servername(), Error::err_chanoprivsneeded(clients_fd[fd].get_nickname(), cmds[1]));
         return;
     }
@@ -152,17 +152,18 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 					continue;
 				}
 				// no such nick : ERR_NOSUCHNICK, 401
-				if (clients_nickname.find(cmds[args_idx]) == clients_nickname.end()) {
+				std::map<std::string, Client*>::const_iterator it = clients_nickname.find(cmds[args_idx]);
+				if (it == clients_nickname.end()) {
 					clients_fd[fd].send_message(get_servername(), Error::err_nosuchnick(clients_fd[fd].get_nickname(), cmds[args_idx++]));
 					continue;
 				}
         		// not in channel : ERR_USERNOTINCHANNEL, 441
-				if (channel.get_client(cmds[args_idx]) == NULL) {
+				if (channel.get_client(it->second) == NULL) {
 					clients_fd[fd].send_message(get_servername(), Error::err_usernotinchannel(clients_fd[fd].get_nickname(), cmds[args_idx++], channel.get_name()));
 					continue;
 				}
 				// already operator
-				if (channel.get_operator(cmds[args_idx]) != NULL) {
+				if (channel.get_operator(it->second) != NULL) {
 				    args_idx += 1;
 					continue;
 				}
@@ -215,12 +216,13 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 					continue;
 				}
         		// not in channel : ERR_USERNOTINCHANNEL, 441
-				if (channel.get_client(cmds[args_idx]) == NULL) {
+                std::map<std::string, Client*>::const_iterator it = clients_nickname.find(cmds[args_idx]);
+				if (channel.get_client(it->second) == NULL) {
 					clients_fd[fd].send_message(get_servername(), Error::err_usernotinchannel(clients_fd[fd].get_nickname(), cmds[args_idx++], channel.get_name()));
 					continue;
 				}
 				// not channel operator : ERR_CHANOPRIVSNEEDED, 482
-				if (channel.get_operator(cmds[args_idx]) == NULL) {
+				if (channel.get_operator(it->second) == NULL) {
 					// clients_fd[fd].send_message(get_servername(), Error::err_chanoprivsneeded(clients_fd[fd].get_nickname(), cmds[args_idx++]));
 					continue;
 				}
@@ -240,7 +242,7 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 	 	successed_mode_cmds_message += (success_cmds[i] + " ");
 
 	// send changed mode to all clients in the channel
-    std::map<std::string, Client*> joined_users = channel.get_clients();
-    for (std::map<std::string, Client*>::iterator iter = joined_users.begin(); iter != joined_users.end(); iter++)
-        iter->second->send_message(clients_fd[fd].get_identifier(), "MODE " + channel.get_name() + " " + successed_mode_cmds_message);
+    std::set<Client*> joined_users = channel.get_clients();
+    for (std::set<Client*>::iterator iter = joined_users.begin(); iter != joined_users.end(); iter++)
+        (*iter)->send_message(clients_fd[fd].get_identifier(), "MODE " + channel.get_name() + " " + successed_mode_cmds_message);
 }

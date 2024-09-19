@@ -48,7 +48,7 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
             Channel channel = iter->second;
 
             // 해당 클라이언트가 채널에 속해있는지 확인
-            if (channel.get_client(clients_fd[fd].get_nickname()) == NULL)
+            if (channel.get_client(&clients_fd[fd]) == NULL)
                 continue;
 
             channel.remove_client(&clients_fd[fd]);
@@ -134,26 +134,26 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
         }
 
         // invite only : ERR_INVITEONLYCHAN, 473
-        if (channel.get_option_invite_only() && channel.get_invited_client(clients_fd[fd].get_nickname()) == NULL) {
+        if (channel.get_option_invite_only() && channel.get_invited_client(&clients_fd[fd]) == NULL) {
             clients_fd[fd].send_message(get_servername(), Error::err_inviteonlychan(clients_fd[fd].get_nickname(), channel.get_name()));
             continue;
         }
 
-        std::map<std::string, Client*> joined_users = channel.get_clients();
-        for (std::map<std::string, Client*>::iterator iter = joined_users.begin(); iter != joined_users.end(); iter++)
-            iter->second->send_message(clients_fd[fd].get_identifier(), "JOIN " + channel.get_name());
+        std::set<Client*> joined_users = channel.get_clients();
+        for (std::set<Client*>::iterator iter = joined_users.begin(); iter != joined_users.end(); iter++)
+            (*iter)->send_message(clients_fd[fd].get_identifier(), "JOIN " + channel.get_name());
 
         channel.add_client(&clients_fd[fd]);
         channel.set_current_users_count(channel.get_current_users_count() + 1);
 
         clients_fd[fd].send_message(clients_fd[fd].get_identifier(), "JOIN " + channel.get_name());
         joined_users = channel.get_clients();
-        std::map<std::string, Client*> joined_operators = channel.get_operators();
+        std::set<Client*> joined_operators = channel.get_operators();
         std::string joined_users_str = "";
-        for (std::map<std::string, Client*>::iterator iter = joined_users.begin(); iter != joined_users.end(); iter++) {
-            if (joined_operators.find(iter->first) != joined_operators.end())
+        for (std::set<Client*>::iterator iter = joined_users.begin(); iter != joined_users.end(); iter++) {
+            if (joined_operators.find(*iter) != joined_operators.end())
                 joined_users_str += "@";
-            joined_users_str += iter->first + " ";
+            joined_users_str += (*iter)->get_nickname() + " ";
         }
         clients_fd[fd].send_message(get_servername(), "353 " + clients_fd[fd].get_nickname() + " @ " + channel.get_name() + " :" + joined_users_str);
         clients_fd[fd].send_message(get_servername(), "366 " + clients_fd[fd].get_nickname() + " " + channel.get_name() + " :End of /NAMES list");
@@ -186,7 +186,7 @@ void Server::command_topic(const int fd, const std::vector<std::string> &cmds) {
     }
 
     // not in channel : ERR_NOTONCHANNEL, 442
-    if (iter->second.get_client(clients_fd[fd].get_nickname()) == NULL) {
+    if (iter->second.get_client(&clients_fd[fd]) == NULL) {
         clients_fd[fd].send_message(get_servername(), Error::err_notonchannel(clients_fd[fd].get_nickname(), cmds[1]));
         return;
     }
@@ -205,7 +205,7 @@ void Server::command_topic(const int fd, const std::vector<std::string> &cmds) {
     }
 
     // set topic
-    if (iter->second.get_option_topic_restrict() && iter->second.get_operator(clients_fd[fd].get_nickname()) == NULL) {
+    if (iter->second.get_option_topic_restrict() && iter->second.get_operator(&clients_fd[fd]) == NULL) {
         // not channel operator : ERR_CHANOPRIVSNEEDED, 482
         clients_fd[fd].send_message(get_servername(), Error::err_chanoprivsneeded(clients_fd[fd].get_nickname(), cmds[1]));
         return;
@@ -214,9 +214,9 @@ void Server::command_topic(const int fd, const std::vector<std::string> &cmds) {
 
     // send changed topic to all clients in the channel
     Channel& channel = iter->second;
-    std::map<std::string, Client*> joined_users = iter->second.get_clients();
-    for (std::map<std::string, Client*>::iterator iter = joined_users.begin(); iter != joined_users.end(); iter++)
-        iter->second->send_message(clients_fd[fd].get_identifier(), "TOPIC " + channel.get_name() + " :" + channel.get_topic());
+    std::set<Client*> joined_users = iter->second.get_clients();
+    for (std::set<Client*>::iterator iter = joined_users.begin(); iter != joined_users.end(); iter++)
+        (*iter)->send_message(clients_fd[fd].get_identifier(), "TOPIC " + channel.get_name() + " :" + channel.get_topic());
 }
 
 void Server::command_invite(const int fd, const std::vector<std::string> &cmds) {
@@ -244,13 +244,13 @@ void Server::command_invite(const int fd, const std::vector<std::string> &cmds) 
     }
 
     // not in channel : ERR_NOTONCHANNEL, 442
-    if (channel.get_client(clients_fd[fd].get_nickname()) == NULL) {
+    if (channel.get_client(&clients_fd[fd]) == NULL) {
         clients_fd[fd].send_message(get_servername(), Error::err_notonchannel(clients_fd[fd].get_nickname(), cmds[2]));
         return;
     }
 
     // not channel operator : ERR_CHANOPRIVSNEEDED, 482
-    if (channel.get_operator(clients_fd[fd].get_nickname()) == NULL) {
+    if (channel.get_operator(&clients_fd[fd]) == NULL) {
         clients_fd[fd].send_message(get_servername(), Error::err_chanoprivsneeded(clients_fd[fd].get_nickname(), cmds[2]));
         return;
     }
@@ -263,7 +263,7 @@ void Server::command_invite(const int fd, const std::vector<std::string> &cmds) 
     }
 
     // already in channel : ERR_USERONCHANNEL, 443
-    if (channel.get_client(invitee->first) != NULL) {
+    if (channel.get_client(invitee->second) != NULL) {
         clients_fd[fd].send_message(get_servername(), Error::err_useronchannel(clients_fd[fd].get_nickname(), invitee->first, cmds[2]));
         return;
     }
@@ -301,13 +301,13 @@ void Server::command_kick(const int fd, std::vector<std::string> &cmds) {
 
     Channel& channel = iter->second;
     // not in channel : ERR_NOTONCHANNEL, 442
-    if (channel.get_client(clients_fd[fd].get_nickname()) == NULL) {
+    if (channel.get_client(&clients_fd[fd]) == NULL) {
         clients_fd[fd].send_message(get_servername(), Error::err_notonchannel(clients_fd[fd].get_nickname(), cmds[1]));
         return;
     }
 
     // not channel operator : ERR_CHANOPRIVSNEEDED, 482
-    if (channel.get_operator(clients_fd[fd].get_nickname()) == NULL) {
+    if (channel.get_operator(&clients_fd[fd]) == NULL) {
         clients_fd[fd].send_message(get_servername(), Error::err_chanoprivsneeded(clients_fd[fd].get_nickname(), cmds[1]));
         return;
     }
@@ -336,18 +336,18 @@ void Server::command_kick(const int fd, std::vector<std::string> &cmds) {
         }
 
         // not in channel : ERR_USERNOTINCHANNEL, 441
-        if (channel.get_client(kicked_client->first) == NULL) {
+        if (channel.get_client(kicked_client->second) == NULL) {
             // 채널에 없는 클라이언트에게만 보냄
             clients_nickname[kicked_client->first]->send_message(get_servername(), Error::err_usernotinchannel(clients_fd[fd].get_nickname(), kicked_client->first, channel.get_name()));
             continue;
         }
 
         // kick success
-        std::map<std::string, Client*> joined_users = channel.get_clients();
-        for (std::map<std::string, Client*>::iterator iter = joined_users.begin(); iter != joined_users.end(); iter++)
-            iter->second->send_message(get_servername(), "KICK " + channel.get_name() + " " + kicked_client->first + reason);
+        std::set<Client*> joined_users = channel.get_clients();
+        for (std::set<Client*>::iterator iter = joined_users.begin(); iter != joined_users.end(); iter++)
+            (*iter)->send_message(get_servername(), "KICK " + channel.get_name() + " " + kicked_client->first + reason);
 
-        if (channel.get_operator(kicked_client->first) != NULL)
+        if (channel.get_operator(kicked_client->second) != NULL)
             channel.remove_operator(kicked_client->second);
         channel.remove_client(kicked_client->second);
         channel.set_current_users_count(channel.get_current_users_count() - 1);

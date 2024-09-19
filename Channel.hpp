@@ -2,7 +2,7 @@
 #define CHANNEL_HPP
 
 #include <string>
-#include <map>
+#include <set>
 
 #include "Client.hpp"
 
@@ -25,12 +25,12 @@ class Channel {
 
         void set_channel_users_limit(const unsigned int limit);
 
-        std::map<std::string, Client*> get_clients() const;
-        std::map<std::string, Client*> get_operators() const;
+        std::set<Client*> get_clients() const;
+        std::set<Client*> get_operators() const;
 
-        Client* get_client(const std::string &client_nickname) const;
-        Client* get_operator(const std::string &operator_nickname) const;
-        Client* get_invited_client(const std::string &operator_nickname) const;
+        Client* get_client(Client *client) const;
+        Client* get_operator(Client *op) const;
+        Client* get_invited_client(Client *invited) const;
 
         std::string get_name() const;
         std::string get_topic() const;
@@ -47,10 +47,10 @@ class Channel {
 
         void set_current_users_count(const unsigned int count);
         void add_client(Client* client);
-        void remove_client(const Client* client);
+        void remove_client(Client* client);
 
         void add_operator(Client* client);
-        void remove_operator(const Client* client);
+        void remove_operator(Client* client);
         std::string get_channel_mode() const;
 
         void add_invited_client(Client* client);
@@ -65,9 +65,9 @@ class Channel {
         void send_message(const Client &client, const std::string &message) const;
 
     private:
-        std::map<std::string, Client*> clients;
-        std::map<std::string, Client*> operators;
-        std::map<std::string, Client*> invited_clients;
+        std::set<Client*> clients;
+        std::set<Client*> operators;
+        std::set<Client*> invited_clients;
 
         std::string channel_name;
         std::string channel_topic;
