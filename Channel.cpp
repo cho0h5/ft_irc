@@ -220,8 +220,14 @@ std::string Channel::get_channel_params() const {
     for (size_t idx = 0; idx < channel_mode.size(); idx++) {
         if (channel_mode[idx] == 'k')
             params += channel_key + " ";
-        else if (channel_mode[idx] == 'l')
-            params += "l" + std::to_string(channel_users_limit);
+        else if (channel_mode[idx] == 'l') {
+            std::stringstream ss;
+            ss << channel_users_limit;
+            if (params.size())
+                params += " " + ss.str();
+            else
+                params += ss.str();
+        }
     }
     return params;
 }
