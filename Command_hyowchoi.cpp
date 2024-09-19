@@ -41,12 +41,15 @@ void Server::command_nick(const int fd, const std::vector<std::string> &cmds) {
     // change nickname
     std::map<int, Client>::iterator it = clients_fd.find(fd);
     Client &client = it->second;
-    if (client.get_nickname().empty())
+    const std::string prev_identifier = client.get_identifier();
+    if (!client.get_nickname().empty())
         clients_nickname.erase(client.get_nickname());
     client.set_nickname(cmds[1]);
     clients_nickname[cmds[1]] = &clients_fd[fd];
 
-    if (it->second.is_connect_possible()) {
+    if (it->second.get_is_registered()) {
+        clients_fd[fd].send_message(prev_identifier, " NICK :" + it->second.get_nickname());
+    } else if (!it->second.get_is_registered() && it->second.is_connect_possible()) {
         register_client(fd);
     }
 }
