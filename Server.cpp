@@ -3,12 +3,20 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <iostream>
 #include <sstream>
 #include "Server.hpp"
 #include "Channel.hpp"
 #include "Client.hpp"
 #include "Error.hpp"
+
+static void set_nonblocking(const int sockfd) {
+    if (fcntl(sockfd, F_SETFL, O_NONBLOCK) == -1) {
+        std::cout << "error\n";
+        exit(EXIT_FAILURE);
+    }
+}
 
 Server::Server(char* port, std::string password) : server_password(password) {
 	if (std::strlen(port) > 6 || std::atoi(port) < 1024) {
@@ -38,7 +46,7 @@ int Server::run() {
 		changelist.clear();
 
 		if (nev < 0) {
-			perror("kqueue");
+    		perror("fcntl set");
 			exit(EXIT_FAILURE);
 		}
 
@@ -52,6 +60,7 @@ int Server::run() {
 				struct sockaddr_in client_addr;
                 socklen_t client_addr_len = sizeof(client_addr);
 				const int client_fd = accept(server_socket_fd, (struct sockaddr *)&client_addr, &client_addr_len);
+				set_nonblocking(client_fd);
 				char client_ip[INET_ADDRSTRLEN];
 				inet_ntop(AF_INET, &client_addr.sin_addr, client_ip, INET_ADDRSTRLEN);
 				std::string client_ip_str(client_ip);
@@ -94,6 +103,7 @@ int Server::create_kqueue() {
 
 int Server::open_server() {
 	server_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
+	set_nonblocking(server_socket_fd);
 
 	struct sockaddr_in addr;
 	memset(&addr, 0, sizeof(addr));
