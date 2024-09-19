@@ -43,6 +43,11 @@ void Server::command_nick(const int fd, const std::vector<std::string> &cmds) {
         return;
     }
 
+    if (!clients_fd[fd].get_is_authorized()) {
+        clients_fd[fd].send_message(get_servername(), Error::err_passwdmismatch());
+        return;
+    }
+
     // no new_nickname : ERR_NONICKNAMEGIVEN, 431
     if (cmds.size() != 2) {
         clients_fd[fd].send_message(get_servername(), Error::err_nonicknamegiven());
@@ -86,6 +91,11 @@ void Server::command_nick(const int fd, const std::vector<std::string> &cmds) {
 void Server::command_user(const int fd, const std::vector<std::string> &cmds) {
     // not USER command
     if (cmds[0] != "USER") {
+        return;
+    }
+
+    if (!clients_fd[fd].get_is_authorized()) {
+        clients_fd[fd].send_message(get_servername(), Error::err_passwdmismatch());
         return;
     }
 
