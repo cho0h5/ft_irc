@@ -363,4 +363,5 @@ void Server::command_kick(const int fd, std::vector<std::string> &cmds) {
         channel.remove_client(kicked_client->second);
         channel.set_current_users_count(channel.get_current_users_count() - 1);
     }
+    prune_channel();
 }
