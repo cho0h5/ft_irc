@@ -2,22 +2,6 @@
 #include "Server.hpp"
 #include "Client.hpp"
 #include <sstream>
-//1. mode인지 확인
-//2. parameter 있는지 확인(461)
-//3. 채널명확인 (403)
-//	3-1. #붙었는지 확인
-//	3-2. 채널명이 있는지 확인
-//4. 명령어 확인 (472) - 명령어 없을 경우 채널 정보 출력
-	//ex)
-	//mode #42seoul
-	//:lead.libera.chat 324 nickname #42seoul +Cnst <-- 기본옵션
-	//:lead.libera.chat 329 nickname #42seoul 1726278610 <--- 이건뭐지 주소?
-
-//	4-1. +-인지 확인
-//	4-2. irklo 중에 하나 나와야 돼
-//5. 권한 확인 (482)
-//6. parameter가 없는지 확인(461)
-//	6-1. o option에 nick이 존재하는지 확인(401)
 
 int get_user_limit(const std::string &str) {
 	int limit = 0;
