@@ -169,7 +169,6 @@ void Server::prune_channel() {
 }
 
 void Server::command_parsing(const int fd, const std::string &command) {
-    const std::string Commands[] = {"PASS", "NICK", "USER", "PRIVMSG", "JOIN", "MODE", "TOPIC", "KICK", "INVITE" };
     std::string exec_cmd, token;
     std::vector<std::string> tokens;
 
@@ -177,16 +176,6 @@ void Server::command_parsing(const int fd, const std::string &command) {
 		return;
 
     std::cout << command << '\n';
-
-    // find execute commands
-    const int size = sizeof(Commands) / sizeof(Commands[0]);
-    for (int i = 0; i < size; i++) {
-        const std::string &cmd = Commands[i];
-        if (command.find(cmd) == 0) {
-            exec_cmd = cmd;
-            break;
-        }
-    }
 
     // tokenize
     const size_t pos = command.find(':');
@@ -202,6 +191,8 @@ void Server::command_parsing(const int fd, const std::string &command) {
         const std::string after_colon = command.substr(pos + 1);
         tokens.push_back(after_colon);
     }
+
+    if (!tokens.empty()) exec_cmd = tokens[0];
 
     if (exec_cmd == "PASS") {
         command_pass(fd, tokens);
