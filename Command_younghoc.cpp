@@ -143,7 +143,7 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
         for (std::set<Client*>::iterator iter = joined_users.begin(); iter != joined_users.end(); iter++)
             (*iter)->send_message(clients_fd[fd].get_identifier(), "JOIN " + channel.get_name());
 
-        clients_fd[fd].send_message(clients_fd[fd].get_nickname(), " " + channel.get_name() + " " + clients_fd[fd].get_identifier() + " " + channel.get_channel_topic_set_time());
+        clients_fd[fd].send_message(clients_fd[fd].get_nickname(), " " + channel.get_name() + " " + clients_fd[fd].get_identifier() + " " + channel.get_channel_topic_set_time()); 
 
         channel.add_client(&clients_fd[fd]);
         channel.set_current_users_count(channel.get_current_users_count() + 1);
@@ -152,7 +152,7 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
 
         if (!iter->second.get_topic().empty()) {
             Channel& channel = iter->second;
-            clients_fd[fd].send_message(get_servername(), "332 " + clients_fd[fd].get_nickname() + " " + channel.get_name() + " :" + channel.get_topic());
+            clients_fd[fd].send_message(get_servername(), "332 " + clients_fd[fd].get_nickname() + " " + channel.get_name() + " :" + channel.get_channel_topic_set_time());
         }
 
         joined_users = channel.get_clients();
