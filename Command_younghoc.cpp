@@ -152,7 +152,7 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
         if (!iter->second.get_topic().empty()) {
             Channel& channel = iter->second;
             clients_fd[fd].send_message(get_servername(), "332 " + clients_fd[fd].get_nickname() + " " + channel.get_name() + " :" + channel.get_topic());
-            clients_fd[fd].send_message(get_servername(), "333 " + clients_fd[fd].get_nickname() + " " + channel.get_name() + " " + clients_fd[fd].get_identifier() + " " + channel.get_channel_topic_set_time());
+            clients_fd[fd].send_message(get_servername(), "333 " + clients_fd[fd].get_nickname() + " " + channel.get_name() + " " + channel.get_channel_topic_set_member() + " " + channel.get_channel_topic_set_time());
         }
 
         joined_users = channel.get_clients();
@@ -219,6 +219,8 @@ void Server::command_topic(const int fd, const std::vector<std::string> &cmds) {
         return;
     }
     iter->second.set_channel_topic(cmds[2]);
+    iter->second.set_channel_topic_set_member(clients_fd[fd].get_identifier());
+    iter->second.set_channel_topic_set_time();
 
     // send changed topic to all clients in the channel
     Channel& channel = iter->second;
