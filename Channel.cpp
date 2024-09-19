@@ -1,6 +1,7 @@
 #include "Channel.hpp"
 #include "Client.hpp"
 #include <ctime>
+#include <sstream>
 
 Channel::Channel() : channel_mode("+") {
     is_invite_only = false;
@@ -12,9 +13,10 @@ Channel::Channel() : channel_mode("+") {
     // std::time_t unix_timestamp = std::chrono::system_clock::to_time_t(now);
 
     std::time_t now = std::time(0); // 현재 시간 (Unix 타임스탬프)
-    std::string channel_generated_time = std::to_string(now); // 타임스탬프를 문자열로 변환
 
-    // channel_generated_time = std::to_string(unix_timestamp);
+    std::stringstream ss;
+    ss << now;
+    std::string channel_generated_time = ss.str();
 }
 Channel::Channel(const std::string &name) : channel_mode("+") {
     channel_name = name;
@@ -27,9 +29,11 @@ Channel::Channel(const std::string &name) : channel_mode("+") {
     // std::time_t unix_timestamp = std::chrono::system_clock::to_time_t(now);
 
     std::time_t now = std::time(0); // 현재 시간 (Unix 타임스탬프)
-    std::string channel_generated_time = std::to_string(now); // 타임스탬프를 문자열로 변환
 
-    // channel_generated_time = std::to_string(unix_timestamp);
+    std::stringstream ss;
+    ss << now;
+    std::string channel_generated_time = ss.str();
+
 }
 
 void Channel::set_channel_topic_set_time() {
@@ -37,9 +41,10 @@ void Channel::set_channel_topic_set_time() {
     // std::time_t unix_timestamp = std::chrono::system_clock::to_time_t(now);
 
     std::time_t now = std::time(0); // 현재 시간 (Unix 타임스탬프)
-    std::string channel_topic_set_time = std::to_string(now); // 타임스탬프를 문자열로 변환
-
-    // channel_topic_set_time = std::to_string(unix_timestamp);
+    
+    std::stringstream ss;
+    ss << now;
+    std::string channel_topic_set_time = ss.str();
 }
 
 std::string Channel::get_channel_topic_set_time() const {
