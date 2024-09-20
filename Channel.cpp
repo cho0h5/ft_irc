@@ -31,7 +31,7 @@ Channel::Channel(const std::string &name) : channel_mode("+") {
 
 void Channel::set_channel_topic_set_time() {
     std::time_t now = std::time(0);
-    
+
     std::stringstream ss;
     ss << now;
     channel_topic_set_time = ss.str();
@@ -41,7 +41,7 @@ std::string Channel::get_channel_topic_set_time() const {
     return channel_topic_set_time;
 }
 
-void Channel::set_channel_topic_set_member(std::string member_identifier) {
+void Channel::set_channel_topic_set_member(const std::string &member_identifier) {
     channel_topic_set_member = member_identifier;
 }
 

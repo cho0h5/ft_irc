@@ -65,7 +65,7 @@ class Channel {
         void set_channel_topic_set_time();
         std::string get_channel_topic_set_time() const;
 
-        void set_channel_topic_set_member(std::string member_identifier);
+        void set_channel_topic_set_member(const std::string &member_identifier);
         std::string get_channel_topic_set_member() const;
         /*----------------------message----------------------*/
         void send_message(const Client &client, const std::string &message) const;
