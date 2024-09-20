@@ -178,7 +178,7 @@ void Server::command_parsing(const int fd, const std::string &command) {
 	if (command.empty())
 		return;
 
-    std::cout << command << '\n';
+    // std::cout << command << '\n';
 
     // tokenize
     const size_t pos = command.find(':');

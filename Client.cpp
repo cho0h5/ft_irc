@@ -101,7 +101,7 @@ bool Client::is_write_buffer_empty() const {
 void Client::send_message(const std::string &sender, const std::string &message) {
     if (message.empty()) return;
 
-    std::cout << ":" << sender << " " << message << '\n';
+    // std::cout << ":" << sender << " " << message << '\n';
     write_buffer += ":";
     write_buffer += sender;
     write_buffer += " ";
