@@ -113,6 +113,32 @@ void Server::command_user(const int fd, const std::vector<std::string> &cmds) {
         return;
     }
 
+    // check valid username
+    for (unsigned long i = 0; i < cmds[1].size(); i++) {
+        const char c = cmds[1][i];
+        if (!(('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z') || ('0' <= c && c <= '9') || c == '_')) {
+            clients_fd[fd].send_message(get_servername(), Error::err_erroneusnickname(cmds[1]));
+            return;
+        }
+    }
+    if (('0' <= cmds[1][0] && cmds[1][0] <= '9')) {
+        clients_fd[fd].send_message(get_servername(), Error::err_erroneusnickname(cmds[1]));
+        return;
+    }
+
+    // check valid realname
+    for (unsigned long i = 0; i < cmds[4].size(); i++) {
+        const char c = cmds[4][i];
+        if (!(('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z') || ('0' <= c && c <= '9') || c == '_')) {
+            clients_fd[fd].send_message(get_servername(), Error::err_erroneusnickname(cmds[4]));
+            return;
+        }
+    }
+    if (('0' <= cmds[4][0] && cmds[4][0] <= '9')) {
+        clients_fd[fd].send_message(get_servername(), Error::err_erroneusnickname(cmds[4]));
+        return;
+    }
+
     // change username
     it->second.set_username(cmds[1]);
     it->second.set_realname(cmds[4]);   // TODO: 이름 유효성 검사 해야함
