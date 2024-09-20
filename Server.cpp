@@ -19,7 +19,7 @@ static void set_nonblocking(const int sockfd) {
     }
 }
 
-Server::Server(char* port, std::string password) : server_password(password) {
+Server::Server(char* port, const std::string password) : server_password(password) {
 	if (std::string(port).size() > 6 || std::atoi(port) >= 65536 || std::atoi(port) < 0) {
 		std::cout << "error\n";
 		exit(EXIT_FAILURE);
@@ -38,7 +38,7 @@ std::string Server::get_servername() const {
     return "ircserver";
 }
 
-int Server::run() {
+void Server::run() {
 	std::cout << "run\n";
 	while (true) {
 	    set_kqueue_write_event();
@@ -61,6 +61,9 @@ int Server::run() {
 				struct sockaddr_in client_addr;
                 socklen_t client_addr_len = sizeof(client_addr);
 				const int client_fd = accept(server_socket_fd, (struct sockaddr *)&client_addr, &client_addr_len);
+				if (client_fd == -1) {
+    				continue;
+				}
 				set_nonblocking(client_fd);
 				char client_ip[INET_ADDRSTRLEN];
 				inet_ntop(AF_INET, &client_addr.sin_addr, client_ip, INET_ADDRSTRLEN);

@@ -16,7 +16,7 @@ class Server {
 public:
 	Server(char* port, std::string password);
 
-	int run();	// return value: error code
+	void run();
 	void command_parsing(const int fd, const std::string &command);
 
 private:
