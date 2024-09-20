@@ -61,6 +61,9 @@ void Server::run() {
 				struct sockaddr_in client_addr;
                 socklen_t client_addr_len = sizeof(client_addr);
 				const int client_fd = accept(server_socket_fd, (struct sockaddr *)&client_addr, &client_addr_len);
+				if (client_fd == -1) {
+    				continue;
+				}
 				set_nonblocking(client_fd);
 				char client_ip[INET_ADDRSTRLEN];
 				inet_ntop(AF_INET, &client_addr.sin_addr, client_ip, INET_ADDRSTRLEN);
