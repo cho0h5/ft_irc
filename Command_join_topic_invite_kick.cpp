@@ -247,7 +247,6 @@ void Server::command_invite(const int fd, const std::vector<std::string> &cmds) 
     }
 
     std::map<std::string, Channel>::iterator iter = channels.find(cmds[2]);
-    Channel& channel = iter->second;
     // no such channel : ERR_NOSUCHCHANNEL, 403
     if (iter == channels.end()) {
         clients_fd[fd].send_message(get_servername(), Error::err_nosuchchannel(clients_fd[fd].get_nickname(), cmds[2]));
@@ -255,6 +254,7 @@ void Server::command_invite(const int fd, const std::vector<std::string> &cmds) 
     }
 
     // not in channel : ERR_NOTONCHANNEL, 442
+    Channel& channel = iter->second;
     if (channel.get_client(&clients_fd[fd]) == NULL) {
         clients_fd[fd].send_message(get_servername(), Error::err_notonchannel(clients_fd[fd].get_nickname(), cmds[2]));
         return;
