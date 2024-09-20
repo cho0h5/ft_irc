@@ -19,7 +19,7 @@ static void set_nonblocking(const int sockfd) {
     }
 }
 
-Server::Server(char* port, std::string password) : server_password(password) {
+Server::Server(char* port, const std::string password) : server_password(password) {
 	if (std::string(port).size() > 6 || std::atoi(port) >= 65536 || std::atoi(port) < 0) {
 		std::cout << "error\n";
 		exit(EXIT_FAILURE);
