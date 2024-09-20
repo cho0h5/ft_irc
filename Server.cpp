@@ -38,7 +38,7 @@ std::string Server::get_servername() const {
     return "ircserver";
 }
 
-int Server::run() {
+void Server::run() {
 	std::cout << "run\n";
 	while (true) {
 	    set_kqueue_write_event();
