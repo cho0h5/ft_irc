@@ -10,7 +10,7 @@ SRCS = main.cpp				\
 	   Command_mode.cpp	\
 	   Command_nick_user_privmsg.cpp
 OBJS = $(SRCS:.cpp=.o)
-CFLAGS = -Wall -Werror -Wextra -std=c++98 -fsanitize=address -g
+CFLAGS = -Wall -Werror -Wextra -std=c++98
 
 all: $(NAME)
 
