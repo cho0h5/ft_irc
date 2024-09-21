@@ -53,12 +53,19 @@ void Server::command_mode(const int fd, const std::vector<std::string> &cmds) {
 		return;
 	}
 
+	// the client not in channel : ERR_USERNOTINCHANNEL, 441
+	std::map<int, Client>::iterator client = clients_fd.find(fd);
+	if (iter->second.get_client(&(client->second)) == NULL) {
+		clients_fd[fd].send_message(get_servername(), Error::err_usernotinchannel(clients_fd[fd].get_nickname(), clients_fd[fd].get_nickname(), cmds[1]));
+		return;
+	}
+
 	Channel& channel = iter->second;
 	// show channel mode info
 	if (cmds.size() == 2) {
 		clients_fd[fd].send_message(get_servername(), "324 " + clients_fd[fd].get_nickname() + " " + channel.get_name() + " " + channel.get_channel_mode() + " " + channel.get_channel_params());
 		clients_fd[fd].send_message(get_servername(), "329 " + clients_fd[fd].get_nickname() + " " + channel.get_name() + " " + channel.get_channel_generated_time());
-		return ;
+		return;
 	}
 
 	// 5. not channel operator : ERR_CHANOPRIVSNEEDED, 482
