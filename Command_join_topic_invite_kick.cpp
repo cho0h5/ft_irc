@@ -128,7 +128,7 @@ void Server::command_join(const int fd, std::vector<std::string> &cmds) {
         }
 
         // channel is full : ERR_CHANNELISFULL, 471
-        if (channel.get_current_users_count() == channel.get_users_limit()) {
+        if (channel.get_current_users_count() >= channel.get_users_limit()) {
             clients_fd[fd].send_message(get_servername(), Error::err_channelisfull(clients_fd[fd].get_nickname(), channel.get_name()));
             continue;
         }
